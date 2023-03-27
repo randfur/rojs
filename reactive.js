@@ -35,7 +35,7 @@ import {
 
 export function reactiveExample() {
   render(document.getElementById('tree'), tree());
-  // render(document.getElementById('dogcow'), dogcow());
+  render(document.getElementById('dogcow'), dogcow());
 }
 
 function tree() {
