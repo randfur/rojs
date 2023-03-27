@@ -18,18 +18,26 @@ import {
   sleep,
   random,
   coinFlip,
+  range,
 } from './utils.js';
 import {
   createObservableJsonProxy,
-  write,
   read,
+  write,
+  mutate,
   printObservation,
 } from './observable-json.js';
 import {
   render,
+  htmlMap,
 } from './render.js';
 
 export function reactiveExample() {
+  render(document.getElementById('dogcow'), dogcow());
+  render(document.getElementById('dogs'), dogs());
+}
+
+function dogcow() {
   let model = createObservableJsonProxy({
     mode: 'dog',
     dog: {
@@ -58,7 +66,7 @@ export function reactiveExample() {
     debug.textContent = printObservation(model);
   }, 100);
 
-  render(app, {
+  return {
     style: () => {
       const mode = read(model.mode);
       const valueProxy = model[mode].value;
@@ -74,5 +82,29 @@ export function reactiveExample() {
       return result;
     },
     textContent: () => read(model[read(model.mode)].emoji),
+  };
+}
+
+function dogs() {
+  let model = createObservableJsonProxy({
+    dogs: [],
   });
+
+  setInterval(() => {
+    mutate(model.dogs, dogs => {
+      dogs.push({
+        name: 'woof' + Math.floor(random(100)),
+        size: Math.ceil(random(100)),
+        legs: range(4).map(() => 'leg'),
+      });
+    });
+  }, 1000);
+
+  return [
+    'Dogs',
+    htmlMap(model.dogs, dog => [
+      read`Dog ${dog.name} is ${dog.size} big.`,
+      htmlMap(dog.legs, leg => leg),
+    ]),
+  ];
 }

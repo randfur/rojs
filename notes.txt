@@ -1,3 +1,42 @@
+# 2023-03-08
+- Pulled dogcow example out into separate function to preserve while other examples are created.
+- Started creating a data type to store on the container element to keep track of template instantiation segments.
+  - Unsure if it should be a tree structure or flat.
+  - If it's flat it will be a tree structure anyway with parent pointers.
+  - Should probably just be a tree, this makes subtree updates easier.
+  - Keeping track of the span tree and where the span nodes exist as elements in the container is tricky.
+
+# 2023-03-07
+- Template types.
+  - Came up with a few more types to support.
+    - String: Needed for element children since they can be text nodes.
+    - Function: Needed for reactive strings, should be able to support being any kind of template type.
+    - Proxy: Shorthand for reading the proxy, should behave like a reactive string.
+    - Array: Since branch template nodes can flat insert an arbitrary number of children it should also be possible with literals (not reading from a proxy), as in to hard code a list of templates to flat inject in as children.
+    - Example usage:
+      render(app, [
+        'Dogs',
+        htmlMap(model.dogs, dog => [
+          read`Dog ${dog.name} is ${dog.size} big.`,
+          htmlMap(dog.legs, leg => leg),
+        ]),
+      ]);
+    - Full set of template types:
+      - Singular:
+        - Element
+        - String
+        - Proxy
+      - Plural:
+        - htmlIf
+        - htmlSwitch
+        - htmlMap
+        - Array
+        - Function
+  - Plural types:
+    - Inject their child templates into their parent's element, which may be their parent's parent's parent's element etc.
+    - Need to be able to update their child templates in place amongst all the other flat mapped elements.
+    - Function is probably the most general form of the plurals
+
 # 2023-03-06
 - Refactored ObservableJsonProxy to store all its internals in the handler and have a dummy object as the target instead.
   - The handler is now instantiated for each proxy rather than being shared.
@@ -6,6 +45,11 @@
   - Removed "internals" as a singular term as it made having sets of ProxyInternals difficult to name.
   - Made Watcher contain a set of ProxyInternals rather than a set of Proxies, it had no need for the outer Proxy object.
 - Split obserable-json.js file in two sections, public and private.
+- Started attempting to implement htmlMap.
+  - Added childrenLog to container element to track what index the htmlMap child nodes start at and how many there are.
+  - Can be used to replace existing children with new ones later when watch() retriggers.
+  - Ran into problem, htmlMap's child templates could be more htmlMaps.
+  - Need to represent this nested structure somehow to ensure the nested maps get cleaned up properly.
 
 # 2023-03-05
 - Removed global notifyingWatchers and notifyingWatchersWaitingRoom in favour of resetting the internals.watchers and saving the set to iterate over as a local variable.
