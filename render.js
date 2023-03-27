@@ -74,6 +74,9 @@ export function render(container, template, parentSpan=null) {
   } else if (typeof template === 'function') {
     renderFunction(container, template, parentSpan);
     // TODO
+  } else if (template instanceof HtmlRead) {
+    renderRead(container, template, parentSpan);
+    // TODO
   } else if (template instanceof HtmlIf) {
     renderIf(container, template, parentSpan);
     // TODO
@@ -89,6 +92,17 @@ export function render(container, template, parentSpan=null) {
   }
 }
 
+class HtmlRead {
+  constructor(readingValue, consumer) {
+    this.readingValue = readingValue;
+    this.consumer = consumer;
+  }
+}
+
+export function htmlRead(readingValue, consumer) {
+  return new HtmlRead(readingValue, consumer);
+}
+
 class HtmlIf {
   // TODO
 }
@@ -98,17 +112,9 @@ class HtmlSwitch {
 }
 
 class HtmlMap {
-  constructor(listProxy, generateItemTemplate) {
-    this.listProxy = listProxy;
-    this.generateItemTemplate = generateItemTemplate;
-  }
 }
 
-export function htmlMap(listProxy, generateItemTemplate) {
-  return new HtmlMap(listProxy, generateItemTemplate);
-}
-
-function flexColumn(...children) {
+export function flexColumn(...children) {
   return ({
     style: {
       display: 'flex',
@@ -118,7 +124,7 @@ function flexColumn(...children) {
   });
 }
 
-function group(...children) {
+export function div(...children) {
   return { children };
 }
 
@@ -129,13 +135,12 @@ function group(...children) {
 const containerSpanKey = Symbol();
 
 function renderString(container, string, parentSpan) {
-  container[containerSpanKey].push(new SpanLeaf(1))
+  console.log('renderString', arguments);
   container.append(document.createTextNode(string));
 }
 
 function renderProxy(container, proxy, parentSpan) {
-  container[containerSpanKey].push(new SpanLeaf(1))
-
+  console.log('renderProxy', arguments);
   const textNode = document.createTextNode('');
   container.append(textNode);
   watch(proxy, value => {
@@ -144,33 +149,44 @@ function renderProxy(container, proxy, parentSpan) {
 }
 
 function renderArray(container, arrayTemplate, parentSpan) {
-  // for (const template of arrayTemplate) {
-  //   render(container, template);
-  // }
-  // TODO
+  console.log('renderArray', arguments);
+  for (const template of arrayTemplate) {
+    render(container, template);
+  }
 }
 
 function renderFunction(container, f, parentSpan) {
-  const containerSegment = createContainerSegment(0);
+  console.log('renderFunction', arguments);
   watch(f, template => {
-    clearContainerSegment(container, containerSegment);
+    render(container, template);
   });
   // TODO
 }
 
+function renderRead(container, readTemplate, parentSpan) {
+  console.log('renderRead', arguments);
+  watch(readTemplate.readingValue, value => {
+    render(container, readTemplate.consumer(value));
+  });
+}
+
 function renderIf(container, ifTemplate, parentSpan) {
+  console.log('renderIf', arguments);
   // TODO
 }
 
 function renderSwitch(container, switchTemplate, parentSpan) {
+  console.log('renderSwitch', arguments);
   // TODO
 }
 
 function renderMap(container, mapTemplate, parentSpan) {
+  console.log('renderMap', arguments);
   // TODO
 }
 
 function renderElement(container, elementTemplate, parentSpan) {
+  console.log('renderElement', arguments);
   let {
     tag='div',
     style={},
@@ -182,7 +198,7 @@ function renderElement(container, elementTemplate, parentSpan) {
   const element = document.createElement(tag);
 
   watch(style, style => {
-    element.style.cssText = '';
+    element.removeAttribute('style');
     for (const [property, readingValue] of Object.entries(style)) {
       watch(readingValue, value => {
         if (property.startsWith('-')) {

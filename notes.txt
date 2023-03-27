@@ -1,3 +1,20 @@
+# 2023-03-28
+- Created tree example instead of dogs.
+  - Just uses functions, arrays and strings.
+  - These should be suitable primitives to work out this flat nesting.
+- Came up with htmlRead.
+  - Function was too limited.
+    - It would read and create a template in the same block scope.
+    - This meant that all the inner reads were part of the top level read.
+  - HtmlRead is basically a call to watch().
+    - Takes a ReadingValue (value or proxy or function) to watch on.
+    - Takes a template consumer that consumes the read value and produces a template to be rendered.
+    - This way if things inside the inner templates are triggered by a model change it won't re-invoke the outer watch.
+    - This split is required to avoid unwanted watch triggering.
+    - Is that right?
+      - Watcher.run() puts itself on the watcher stack even for the consumer() call.
+      - Not sure if this is actually any different to what function rendering does...
+
 # 2023-03-08
 - Pulled dogcow example out into separate function to preserve while other examples are created.
 - Started creating a data type to store on the container element to keep track of template instantiation segments.

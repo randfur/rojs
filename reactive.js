@@ -29,12 +29,13 @@ import {
 } from './observable-json.js';
 import {
   render,
-  htmlMap,
+  div,
+  htmlRead,
 } from './render.js';
 
 export function reactiveExample() {
-  render(document.getElementById('dogcow'), dogcow());
-  render(document.getElementById('dogs'), dogs());
+  // render(document.getElementById('dogcow'), dogcow());
+  render(document.getElementById('tree'), tree());
 }
 
 function dogcow() {
@@ -85,26 +86,40 @@ function dogcow() {
   };
 }
 
-function dogs() {
+function tree() {
   let model = createObservableJsonProxy({
-    dogs: [],
+    a: 2,
+    b: 2,
+    c: 2,
   });
 
-  setInterval(() => {
-    mutate(model.dogs, dogs => {
-      dogs.push({
-        name: 'woof' + Math.floor(random(100)),
-        size: Math.ceil(random(100)),
-        legs: range(4).map(() => 'leg'),
-      });
-    });
-  }, 1000);
+  // setInterval(() => {
+  //   write(model.a, Math.floor(random(3)));
+  // }, 900);
+
+  // setInterval(() => {
+  //   write(model.b, 2);
+  //   console.log('b = 2');
+  // }, 2000);
+
+  // setInterval(() => {
+  //   write(model.c, Math.floor(random(3)));
+  // }, 700);
 
   return [
-    'Dogs',
-    htmlMap(model.dogs, dog => [
-      read`Dog ${dog.name} is ${dog.size} big.`,
-      htmlMap(dog.legs, leg => leg),
-    ]),
+    div('tree'),
+    div(htmlRead(model.a, a => {
+      return range(a).map(i => {
+        return htmlRead(model.b, b => {
+          return range(b).map(j => {
+            return htmlRead(model.c, c => {
+              return range(c).map(k => {
+                return div(`a:${i} b:${j} c:${k}`);
+              });
+            });
+          });
+        });
+      });
+    })),
   ];
 }
