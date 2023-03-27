@@ -34,8 +34,46 @@ import {
 } from './render.js';
 
 export function reactiveExample() {
-  // render(document.getElementById('dogcow'), dogcow());
   render(document.getElementById('tree'), tree());
+  // render(document.getElementById('dogcow'), dogcow());
+}
+
+function tree() {
+  let model = createObservableJsonProxy({
+    a: 2,
+    b: 2,
+    c: 2,
+  });
+
+  // setInterval(() => {
+  //   write(model.a, Math.floor(random(3)));
+  // }, 900);
+
+  // setInterval(() => {
+  //   write(model.b, 2);
+  //   console.log('b = 2');
+  // }, 2000);
+
+  // setInterval(() => {
+  //   write(model.c, Math.floor(random(3)));
+  // }, 700);
+
+  return [
+    div('tree'),
+    div(htmlRead(model.a, a => {
+      return range(a).map(i => {
+        return htmlRead(model.b, b => {
+          return range(b).map(j => {
+            return htmlRead(model.c, c => {
+              return range(c).map(k => {
+                return div(`a:${i} b:${j} c:${k}`);
+              });
+            });
+          });
+        });
+      });
+    })),
+  ];
 }
 
 function dogcow() {
@@ -84,42 +122,4 @@ function dogcow() {
     },
     textContent: () => read(model[read(model.mode)].emoji),
   };
-}
-
-function tree() {
-  let model = createObservableJsonProxy({
-    a: 2,
-    b: 2,
-    c: 2,
-  });
-
-  // setInterval(() => {
-  //   write(model.a, Math.floor(random(3)));
-  // }, 900);
-
-  // setInterval(() => {
-  //   write(model.b, 2);
-  //   console.log('b = 2');
-  // }, 2000);
-
-  // setInterval(() => {
-  //   write(model.c, Math.floor(random(3)));
-  // }, 700);
-
-  return [
-    div('tree'),
-    div(htmlRead(model.a, a => {
-      return range(a).map(i => {
-        return htmlRead(model.b, b => {
-          return range(b).map(j => {
-            return htmlRead(model.c, c => {
-              return range(c).map(k => {
-                return div(`a:${i} b:${j} c:${k}`);
-              });
-            });
-          });
-        });
-      });
-    })),
-  ];
 }

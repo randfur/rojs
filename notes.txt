@@ -14,6 +14,29 @@
     - Is that right?
       - Watcher.run() puts itself on the watcher stack even for the consumer() call.
       - Not sure if this is actually any different to what function rendering does...
+      - Actually it is, the consumer creates an htmlRead which creates a separate watch stack entry which... because read()s only add themselves to the top of the stack the outer htmlReads are untouched.
+    - The nested read and template callback is very very deep, was hard to write and is hard to read.
+      div(htmlRead(model.a, a => {
+        return range(a).map(i => {
+          return htmlRead(model.b, b => {
+            return range(b).map(j => {
+              return htmlRead(model.c, c => {
+                return range(c).map(k => {
+                  return div(`a:${i} b:${j} c:${k}`);
+                });
+              });
+            });
+          });
+        });
+      })),
+      - htmlMap should fix the readability here by hiding the map() call.
+        htmlMap(model.aList, a => {
+          htmlMap(model.bList, b => {
+            htmlMap(model.cList, c => {
+              div(read`a:${a} b:${b} c:${c}`);
+            });
+          });
+        });
 
 # 2023-03-08
 - Pulled dogcow example out into separate function to preserve while other examples are created.
