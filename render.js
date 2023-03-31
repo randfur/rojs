@@ -135,6 +135,8 @@ export function div(...children) {
 
 /*
 # Private
+
+TODO: write interface types.
 */
 
 const containerSpanKey = Symbol();

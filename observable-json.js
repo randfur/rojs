@@ -99,6 +99,7 @@ export function printObservation(proxy) {
 }
 
 export function read(proxy) {
+  // TODO: Make this usable with template literals e.g.: read`Hello ${model.name}`
   const proxyInternal = proxy[internalKey];
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
