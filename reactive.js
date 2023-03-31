@@ -15,6 +15,7 @@
  */
 
 import {
+  array,
   sleep,
   random,
   coinFlip,
@@ -65,6 +66,7 @@ function flatTree() {
 
   return [
     div('Flat tree'),
+    div(array`Branching values: ${model.a}, ${model.b}, ${model.c}`),
     div(htmlRead(model.a, a => {
       return range(a).map(i => {
         return htmlRead(model.b, b => {

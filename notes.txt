@@ -23,6 +23,10 @@
   - Used to let template functions control the rendered template elements before they're instantiated.
   - Used in Dog cow example to access a debug div and set its textContent on an interval.
   - A bit dangerous in terms of memory leaks, no clean up callback currently should the element be replaced by another one.
+- Template literals for proxies
+  - Added array() function to use as template literal like array`Hello ${model.name}`.
+  - Turns the template literal into an array of the string and values in order specified.
+  - Useful for splicing strings between proxies and anything else.
 
 # 2023-03-28
 - Created tree example instead of dogs.

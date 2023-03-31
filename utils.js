@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+export function array(strings, ...values) {
+  const result = [];
+  const maxLength = Math.max(strings.length, values.length);
+  for (let i = 0; i < maxLength; ++i) {
+    if (i < strings.length && strings[i]) {
+      result.push(strings[i]);
+    }
+    if (i < values.length) {
+      result.push(values[i]);
+    }
+  }
+  return result;
+}
+
 export function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
