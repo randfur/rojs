@@ -50,45 +50,40 @@ class HtmlMap<T> {
   // TODO
 }
 
-export function render(container: HTMLElement, elementTemplate: Template);
+export function render(container: HTMLElement, elementTemplate: Template): NodeTree;
+
+type NodeTree = Array<NodeTree> | Node;
 
 // TODO: Complete.
 */
 
-export function render(container, template, parentSpan=null) {
-  if (parentSpan === null) {
-    if (!(containerSpanKey in container)) {
-      container[containerSpanKey] = new SpanBranch();
-    }
-    parentSpan = container[containerSpanKey];
-  }
-
+export function render(container, template) {
   if (typeof template === 'string') {
-    renderString(container, template, parentSpan);
+    return renderString(container, template);
   } else if (isObservableJsonProxy(template)) {
-    renderProxy(container, template, parentSpan);
+    return renderProxy(container, template);
     // TODO
   } else if (template instanceof Array) {
-    renderArray(container, template, parentSpan);
+    return renderArray(container, template);
     // TODO
   } else if (typeof template === 'function') {
-    renderFunction(container, template, parentSpan);
+    return renderFunction(container, template);
     // TODO
   } else if (template instanceof HtmlRead) {
-    renderRead(container, template, parentSpan);
+    return renderRead(container, template);
     // TODO
   } else if (template instanceof HtmlIf) {
-    renderIf(container, template, parentSpan);
+    return renderIf(container, template);
     // TODO
   } else if (template instanceof HtmlSwitch) {
-    renderSwitch(container, template, parentSpan);
+    return renderSwitch(container, template);
     // TODO
   } else if (template instanceof HtmlMap) {
-    renderMap(container, template, parentSpan);
+    return renderMap(container, template);
     // TODO
   } else {
     console.assert(typeof template === 'object');
-    renderElement(container, template, parentSpan);
+    return renderElement(container, template);
   }
 }
 
@@ -124,6 +119,16 @@ export function flexColumn(...children) {
   });
 }
 
+export function flexRow(...children) {
+  return ({
+    style: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    children,
+  });
+}
+
 export function div(...children) {
   return { children };
 }
@@ -134,64 +139,66 @@ export function div(...children) {
 
 const containerSpanKey = Symbol();
 
-function renderString(container, string, parentSpan) {
-  console.log('renderString', arguments);
-  container.append(document.createTextNode(string));
+function renderString(container, string) {
+  const textNode = document.createTextNode(string);
+  container.append(textNode);
+  return textNode;
 }
 
-function renderProxy(container, proxy, parentSpan) {
-  console.log('renderProxy', arguments);
+function renderProxy(container, proxy) {
   const textNode = document.createTextNode('');
   container.append(textNode);
   watch(proxy, value => {
     textNode.textContent = value;
   });
+  return textNode;
 }
 
-function renderArray(container, arrayTemplate, parentSpan) {
-  console.log('renderArray', arguments);
+function renderArray(container, arrayTemplate) {
+  const nodes = [];
   for (const template of arrayTemplate) {
-    render(container, template);
+    nodes.push(render(container, template));
   }
+  return nodes;
 }
 
-function renderFunction(container, f, parentSpan) {
-  console.log('renderFunction', arguments);
+function renderFunction(container, f) {
+  const nodes = [[]];
   watch(f, template => {
-    render(container, template);
+    removeNodeTree(nodes);
+    nodes[0] = render(container, template);
   });
-  // TODO
+  return nodes;
 }
 
-function renderRead(container, readTemplate, parentSpan) {
-  console.log('renderRead', arguments);
+function renderRead(container, readTemplate) {
+  const nodes = [[]];
   watch(readTemplate.readingValue, value => {
-    render(container, readTemplate.consumer(value));
+    removeNodeTree(nodes);
+    nodes[0] = render(container, readTemplate.consumer(value));
   });
+  return nodes;
 }
 
-function renderIf(container, ifTemplate, parentSpan) {
-  console.log('renderIf', arguments);
+function renderIf(container, ifTemplate) {
   // TODO
 }
 
-function renderSwitch(container, switchTemplate, parentSpan) {
-  console.log('renderSwitch', arguments);
+function renderSwitch(container, switchTemplate) {
   // TODO
 }
 
-function renderMap(container, mapTemplate, parentSpan) {
-  console.log('renderMap', arguments);
+function renderMap(container, mapTemplate) {
   // TODO
 }
 
-function renderElement(container, elementTemplate, parentSpan) {
-  console.log('renderElement', arguments);
+function renderElement(container, elementTemplate) {
   let {
     tag='div',
     style={},
     // TODO: events={},
     children=[],
+    onCreate=null,
   } = elementTemplate;
 
   console.assert(typeof tag === 'string');
@@ -218,6 +225,7 @@ function renderElement(container, elementTemplate, parentSpan) {
     case 'style':
     case 'events':
     case 'children':
+    case 'onCreate':
       break;
     default:
       watch(readingValue, value => {
@@ -235,36 +243,18 @@ function renderElement(container, elementTemplate, parentSpan) {
   }
 
   container.append(element);
+
+  onCreate?.(element);
+
+  return element;
 }
 
-class Span {
-  constructor() {
-    this.key = Symbol();
-  }
-}
-
-class SpanLeaf extends Span {
-  constructor(size) {
-    super();
-    this.size = size;
-  }
-
-  size() {
-    return size;
-  }
-}
-
-class SpanBranch extends Span {
-  constructor() {
-    super();
-    this.children = [];
-  }
-
-  size() {
-    let size = 0;
-    for (const childSpan of this.children) {
-      size += childSpan.size();
+function removeNodeTree(nodeTree) {
+  if (nodeTree instanceof Array) {
+    for (const subNodeTree of nodeTree) {
+      removeNodeTree(subNodeTree);
     }
-    return size;
+  } else {
+    nodeTree.parentNode.removeChild(nodeTree);
   }
 }

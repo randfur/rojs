@@ -30,36 +30,41 @@ import {
 import {
   render,
   div,
+  flexRow,
   htmlRead,
 } from './render.js';
 
 export function reactiveExample() {
-  render(document.getElementById('tree'), tree());
-  render(document.getElementById('dogcow'), dogcow());
+  render(
+    document.body,
+    flexRow(
+      div(flatTree()),
+      div(dogCow()),
+    ),
+  );
 }
 
-function tree() {
+function flatTree() {
   let model = createObservableJsonProxy({
     a: 2,
     b: 2,
     c: 2,
   });
 
-  // setInterval(() => {
-  //   write(model.a, Math.floor(random(3)));
-  // }, 900);
+  setInterval(() => {
+    write(model.a, Math.ceil(random(4)));
+  }, 1100);
 
-  // setInterval(() => {
-  //   write(model.b, 2);
-  //   console.log('b = 2');
-  // }, 2000);
+  setInterval(() => {
+    write(model.b, Math.ceil(random(4)));
+  }, 1200);
 
-  // setInterval(() => {
-  //   write(model.c, Math.floor(random(3)));
-  // }, 700);
+  setInterval(() => {
+    write(model.c, Math.ceil(random(4)));
+  }, 1300);
 
   return [
-    div('tree'),
+    div('Flat tree'),
     div(htmlRead(model.a, a => {
       return range(a).map(i => {
         return htmlRead(model.b, b => {
@@ -76,7 +81,7 @@ function tree() {
   ];
 }
 
-function dogcow() {
+function dogCow() {
   let model = createObservableJsonProxy({
     mode: 'dog',
     dog: {
@@ -101,25 +106,32 @@ function dogcow() {
     write(model.cow.value, random(100));
   }, 600);
 
-  setInterval(() => {
-    debug.textContent = printObservation(model);
-  }, 100);
-
-  return {
-    style: () => {
-      const mode = read(model.mode);
-      const valueProxy = model[mode].value;
-      const result = {
-        height: '40px',
-      };
-      if (mode === 'dog') {
-        result.fontSize = () => `${read(valueProxy)}px`;
-      } else {
-        result.fontSize = '20px';
-        result.marginLeft = () => `${read(valueProxy)}px`;
-      }
-      return result;
+  return [
+    'Dog cow',
+    {
+      style: () => {
+        const mode = read(model.mode);
+        const valueProxy = model[mode].value;
+        const result = {
+          height: '40px',
+        };
+        if (mode === 'dog') {
+          result.fontSize = () => `${read(valueProxy)}px`;
+        } else {
+          result.fontSize = '20px';
+          result.marginLeft = () => `${read(valueProxy)}px`;
+        }
+        return result;
+      },
+      textContent: () => read(model[read(model.mode)].emoji),
     },
-    textContent: () => read(model[read(model.mode)].emoji),
-  };
+    {
+      tag: 'pre',
+      onCreate(element) {
+        setInterval(() => {
+          element.textContent = printObservation(model);
+        }, 100);
+      }
+    },
+  ];
 }

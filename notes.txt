@@ -1,3 +1,29 @@
+# 2023-03-31
+- Came up with idea for tracking flat elements in the tree of template instantiations.
+  - Have render() return a live list of nodes it created.
+  - If the template instantiation rerenders itself it will update its list.
+  - The outer caller of the render can clear this list when it wants to do an outer re-render.
+  - This list is really a tree. It's either a single node or a list of lists or nodes.
+  - type NodeTree = Array<NodeTree> | Node;
+  - Implemented this and it seems to work!
+  - Far far simpler than the index span approach I was attempting before.
+  - Fits with the Node.removeChild(node) API which doesn't take an index.
+    - This API seems like it would be slow for large numbers of elements (quadratic).
+      - Maybe elements know their index?
+      - If they recorded that data then as things were removed they'd need to update many element indexes.
+    - No easy alternative to remove a large batch of elements it seems.
+  - Seems more straightforward to support inplace updating (rather than wipe and rerender) for list proxies.
+- Test examples
+  - Currently have dedicated divs in the index.html.
+  - Could be rendering into their own created divs.
+  - Compose examples together in one larger test render example that splits them into separate columns.
+  - Omg it works really well.
+- onCreate
+  - Added callback parameter to element template to be called once created.
+  - Used to let template functions control the rendered template elements before they're instantiated.
+  - Used in Dog cow example to access a debug div and set its textContent on an interval.
+  - A bit dangerous in terms of memory leaks, no clean up callback currently should the element be replaced by another one.
+
 # 2023-03-28
 - Created tree example instead of dogs.
   - Just uses functions, arrays and strings.
