@@ -1,3 +1,10 @@
+# 2023-04-01
+- Current re-render implementation incorrect.
+  - New nodes are always appended to the container.
+  - Need to replace in place.
+  - Instead of removing all nodes use replacement and insertion based on the existing list.
+  - Node has insertBefore() and nextSibling and replaceChild.
+
 # 2023-03-31
 - Came up with idea for tracking flat elements in the tree of template instantiations.
   - Have render() return a live list of nodes it created.
