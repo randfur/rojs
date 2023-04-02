@@ -1,3 +1,12 @@
+# 2023-04-03
+- Returning a FlatNodeTree isn't enough.
+  - How to find which node to insertBefore?
+  - Pathological case:
+    - [[NodeA], [], [], [], [NodeC]] -> [[NodeA], [], [NodeB], [], [NodeC]]
+    - Inserting NodeB needs to search across multiple siblings to find NodeC to insert before.
+  - Update render() to take a FlatNodeTree and an index path into it where it should live.
+  - Unfortunate cost of an index path array for every call.
+
 # 2023-04-01
 - Current re-render implementation incorrect.
   - New nodes are always appended to the container.
