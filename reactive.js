@@ -59,7 +59,7 @@ function resizingSiblings() {
 
   for (const [i, colour] of enumerate(colours)) {
     setInterval(() => {
-      write(model[colour], Math.ceil(random(3)));
+      write(model[colour], Math.round(random(3)));
     }, 1000 + i * 100);
   }
 
