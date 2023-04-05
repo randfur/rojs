@@ -61,7 +61,7 @@ type FlatTree = Array<FlatTree> | Node;
 */
 
 export function render(container, template, flatTreeRoot=[], flatTreeParent=flatTreeRoot, flatTreePath=[0], insertBeforeNode=null) {
-  if (typeof template === 'string') {
+  if (typeof template === 'string' || typeof template === 'number') {
     return renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (isObservableJsonProxy(template)) {
     return renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
@@ -136,6 +136,8 @@ export function div(...children) {
   return { children };
 }
 
+export const br = { tag: 'br' };
+
 /*
 # Private
 
@@ -193,7 +195,7 @@ function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, fla
 function renderFunction(container, f, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   watch(f, (template, runCount) => {
     if (runCount > 1) {
-      insertBeforeNode = findAfterNode(flatTreeRoot, flatTreePath);
+      insertBeforeNode = findNextNode(flatTreeRoot, flatTreePath);
     }
     render(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
@@ -202,7 +204,7 @@ function renderFunction(container, f, flatTreeRoot, flatTreeParent, flatTreePath
 function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   watch(readTemplate.readingValue, (value, runCount) => {
     if (runCount > 1) {
-      insertBeforeNode = findAfterNode(flatTreeRoot, flatTreePath);
+      insertBeforeNode = findNextNode(flatTreeRoot, flatTreePath);
     }
     render(container, readTemplate.consumer(value), flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
@@ -266,8 +268,9 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   if (!(children instanceof Array)) {
     children = [children];
   }
-  for (const childTemplate of children) {
-    render(element, childTemplate);
+  const innerFlatTreeRoot = [];
+  for (let i = 0; i < children.length; ++i) {
+    render(element, children[i], innerFlatTreeRoot, innerFlatTreeRoot, [i], insertBeforeNode);
   }
 
   const index = lastItem(flatTreePath);
@@ -293,16 +296,16 @@ function removeFlatTree(flatTree) {
   }
 }
 
-function findAfterNode(flatTreeParent, flatTreePath, pathIndex=0) {
+function findNextNode(flatTreeParent, flatTreePath, pathIndex=0) {
   if (pathIndex === flatTreePath.length) {
     return null;
   }
   let index = flatTreePath[pathIndex];
-  const node = findAfterNode(flatTreeParent[index], flatTreePath, pathIndex + 1);
+  const node = findNextNode(flatTreeParent[index], flatTreePath, pathIndex + 1);
   if (node) {
     return node;
   }
-  for (; index < flatTreeParent.length; ++index) {
+  for (++index; index < flatTreeParent.length; ++index) {
     const node = findFirstNode(flatTreeParent[index]);
     if (node) {
       return node;

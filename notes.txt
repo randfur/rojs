@@ -1,3 +1,45 @@
+# 2023-04-05
+- Trying implementation.
+  - Shape of the FlatNodeTree interface unknown, working it out.
+  - Not quite sure what each render function's responsibilities are re creating, clearing, adding to, updating the FlatNodeTree.
+  - Example:
+    - Template:
+      - [htmlMap(model.as), htmlMap(model.bs)]
+      - htmlMap should use the identity function as the default consumer function.
+        - Good for auto reading inner proxy values.
+    - Expected FlatNodeTree construction:
+      - null render()
+      - [] renderArray()
+      - [[]] renderHtmlMap()
+      - [[a0]] renderProxy()
+      - [[a0, a1]] renderProxy()
+      - [[a0, a1], []] renderHtmlMap()
+      - [[a0, a1], [b0]] renderProxy()
+      - [[a0, a1], [b0, b1]] renderProxy()
+    - Expected update to model.as as [a0]:
+      - [[a0, a1], [b0, b1]] renderHtmlMap()
+      - [[a0, a1], [b0, b1]] remove dom nodes [a0, a1]
+      - [[a0], [b0, b1]] set [0] to [a0]
+      - [[a0], [b0, b1]] insert dom nodes of [a0] behind b0
+  - Maybe it would be good to build up the FlatNodeTree before inserting it into the DOM.
+    - How does this mesh with watched proxy update re-renders?
+    - Experiment with an attach phase separate from template instantiation phase.
+    - This is kind of like a virtual DOM now.
+    - Not convinced this is necessary.
+  - Trying implementing each render function and waiting to see a pattern to abstract out of all of them.
+    - Added insertBefore parameter to save on looking up the next node.
+    - Implemented "find next node" in the list tree.
+- Added number type as supported by renderString.
+- Got a broken implementation working.
+  - Updated flatTree reactive example to be resizingSiblings.
+    - Adjacent arrays that update their contents and may be empty.
+  - Broken because a0 can be seen after c0 when it should statically be before it.
+  - Need to create minimal test case to debug.
+  - Fixed bug in renderElement, it wasn't creating a flatTreeRoot for itself to be used by all its children.
+- Implementation seems to be working.
+  - Yay.
+  - Updated resizing siblings example to use colours and more functional JS to be generic for a list of colours.
+
 # 2023-04-03
 - Returning a FlatNodeTree isn't enough.
   - How to find which node to insertBefore?

@@ -16,71 +16,85 @@
 
 import {
   array,
-  sleep,
-  random,
   coinFlip,
+  join,
+  random,
   range,
+  sleep,
+  enumerate,
 } from './utils.js';
 import {
   createObservableJsonProxy,
-  read,
-  write,
   mutate,
   printObservation,
+  read,
+  write,
 } from './observable-json.js';
 import {
-  render,
+  br,
   div,
   flexRow,
   htmlRead,
+  render,
 } from './render.js';
 
 export function reactiveExample() {
   render(
     document.body,
     flexRow(
-      div(flatTree()),
+      div(resizingSiblings()),
       div(dogCow()),
     ),
   );
 }
 
-function flatTree() {
-  let model = createObservableJsonProxy({
-    a: 2,
-    b: 2,
-    c: 2,
-  });
+function resizingSiblings() {
+  const colours = ['red', 'yellow', 'lime', 'blue'];
 
-  setInterval(() => {
-    write(model.a, Math.ceil(random(4)));
-  }, 1100);
+  let model = createObservableJsonProxy(
+    Object.fromEntries(
+      colours.map(colour => [colour, 2])
+    )
+  );
 
-  setInterval(() => {
-    write(model.b, Math.ceil(random(4)));
-  }, 1200);
+  for (const [i, colour] of enumerate(colours)) {
+    setInterval(() => {
+      write(model[colour], Math.floor(random(3)));
+    }, 1000 + i * 100);
+  }
 
-  setInterval(() => {
-    write(model.c, Math.ceil(random(4)));
-  }, 1300);
+  const colourBlockStyle = {
+    margin: '1px',
+    width: '20px',
+    height: '20px',
+    textAlign: 'center',
+    color: 'black',
+  };
 
-  return [
-    div('Flat tree'),
-    div(array`Branching values: ${model.a}, ${model.b}, ${model.c}`),
-    div(htmlRead(model.a, a => {
-      return range(a).map(i => {
-        return htmlRead(model.b, b => {
-          return range(b).map(j => {
-            return htmlRead(model.c, c => {
-              return range(c).map(k => {
-                return div(`a:${i} b:${j} c:${k}`);
-              });
-            });
-          });
-        });
-      });
-    })),
-  ];
+  return {
+    style: { width: '200px' },
+    children: [
+      join([
+        'Resizing siblings',
+        'Values: ',
+        ...colours.map(colour => array`- ${colour}: ${model[colour]}`),
+      ], br),
+      colours.map(
+        colour => htmlRead(
+          model[colour],
+          count => range(count).map(
+            i => ({
+              style: {
+                ...colourBlockStyle,
+                backgroundColor: colour,
+              },
+              textContent: i,
+            })
+          )
+        )
+      ),
+    ],
+  };
 }
 
 function dogCow() {

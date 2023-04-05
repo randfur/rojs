@@ -28,6 +28,23 @@ export function array(strings, ...values) {
   return result;
 }
 
+export function join(list, separator) {
+  const result = [];
+  for (let i = 0; i < list.length; ++i) {
+    if (i > 0) {
+      result.push(separator);
+    }
+    result.push(list[i]);
+  }
+  return result;
+}
+
+export function* enumerate(list) {
+  for (let i = 0; i < list.length; ++i) {
+    yield [i, list[i]];
+  }
+}
+
 export function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
