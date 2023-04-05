@@ -68,3 +68,7 @@ export function range(n) {
   }
   return result;
 }
+
+export function lastItem(list) {
+  return list[list.length - 1];
+}

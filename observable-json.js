@@ -130,7 +130,7 @@ export function watch(readingValue, consumer) {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
   } else {
-    consumer(readingValue);
+    consumer(readingValue, /*runCount=*/1);
   }
   proxyMutationAllowed = oldProxyMutationAllowed;
 }
@@ -310,10 +310,10 @@ class Watcher {
     watcherStack.push(this);
 
     if (isObservableJsonProxy(this.readingValue)) {
-      this.consumer(read(this.readingValue));
+      this.consumer(read(this.readingValue), this.runCount);
     } else {
       console.assert(typeof this.readingValue === 'function');
-      this.consumer(this.readingValue());
+      this.consumer(this.readingValue(), this.runCount);
     }
 
     watcherStack.pop();
