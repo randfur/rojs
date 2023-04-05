@@ -53,13 +53,13 @@ function resizingSiblings() {
 
   let model = createObservableJsonProxy(
     Object.fromEntries(
-      colours.map(colour => [colour, 2])
+      colours.map(colour => [colour, 3])
     )
   );
 
   for (const [i, colour] of enumerate(colours)) {
     setInterval(() => {
-      write(model[colour], Math.floor(random(3)));
+      write(model[colour], Math.ceil(random(3)));
     }, 1000 + i * 100);
   }
 
