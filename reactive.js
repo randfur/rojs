@@ -37,7 +37,7 @@ import {
   htmlRead,
   htmlIf,
   htmlSwitch,
-  htmlMap,
+  htmlMapRead,
   render,
 } from './render.js';
 
@@ -55,7 +55,7 @@ export function reactiveExample() {
 function resizingSiblings() {
   const colours = ['red', 'yellow', 'lime', 'blue'];
 
-  const model = createObservableJsonProxy(
+  const modelProxy = createObservableJsonProxy(
     Object.fromEntries(
       colours.map(colour => [colour, 3])
     )
@@ -63,7 +63,7 @@ function resizingSiblings() {
 
   for (const [i, colour] of enumerate(colours)) {
     setInterval(() => {
-      write(model[colour], Math.round(random(3)));
+      write(modelProxy[colour], Math.round(random(3)));
     }, 1000 + i * 100);
   }
 
@@ -81,11 +81,11 @@ function resizingSiblings() {
       join([
         'Resizing siblings',
         'Values: ',
-        ...colours.map(colour => array`- ${colour}: ${model[colour]}`),
+        ...colours.map(colour => array`- ${colour}: ${modelProxy[colour]}`),
       ], br),
       colours.map(
         colour => htmlRead(
-          model[colour],
+          modelProxy[colour],
           count => range(count).map(
             i => ({
               style: {
@@ -102,7 +102,7 @@ function resizingSiblings() {
 }
 
 function dogCow() {
-  let model = createObservableJsonProxy({
+  let modelProxy = createObservableJsonProxy({
     mode: 'dog',
     dog: {
       emoji: '🐶',
@@ -115,23 +115,23 @@ function dogCow() {
   });
 
   setInterval(() => {
-    write(model.mode, coinFlip() ? 'dog' : 'cow');
+    write(modelProxy.mode, coinFlip() ? 'dog' : 'cow');
   }, 3100);
 
   setInterval(() => {
-    write(model.dog.value, 20 + random(20));
+    write(modelProxy.dog.value, 20 + random(20));
   }, 700);
 
   setInterval(() => {
-    write(model.cow.value, random(100));
+    write(modelProxy.cow.value, random(100));
   }, 600);
 
   return [
     'Dog cow',
     {
       style: () => {
-        const mode = read(model.mode);
-        const valueProxy = model[mode].value;
+        const mode = read(modelProxy.mode);
+        const valueProxy = modelProxy[mode].value;
         const result = {
           height: '40px',
         };
@@ -143,13 +143,13 @@ function dogCow() {
         }
         return result;
       },
-      textContent: () => read(model[read(model.mode)].emoji),
+      textContent: () => read(modelProxy[read(modelProxy.mode)].emoji),
     },
     {
       tag: 'pre',
       onCreate(element) {
         setInterval(() => {
-          element.textContent = printObservation(model);
+          element.textContent = printObservation(modelProxy);
         }, 100);
       }
     },
@@ -157,7 +157,7 @@ function dogCow() {
 }
 
 function dogCat() {
-  const model = createObservableJsonProxy({
+  const modelProxy = createObservableJsonProxy({
     mode: 'dog',
     dogData: {
       barkbark: true,
@@ -170,39 +170,39 @@ function dogCat() {
   });
 
   setInterval(() => {
-    write(model.mode, coinFlip() ? 'dog' : 'cat');
+    write(modelProxy.mode, coinFlip() ? 'dog' : 'cat');
   }, 2000);
 
   setInterval(() => {
-    write(model.dogData.walkies, Math.round(random(4)));
-  }, 1500);
+    write(modelProxy.dogData.walkies, Math.round(random(4)));
+  }, 700);
   setInterval(() => {
-    write(model.dogData.barkbark, coinFlip());
+    write(modelProxy.dogData.barkbark, coinFlip());
   }, 500);
 
   setInterval(() => {
-    write(model.catData.meowmeow, coinFlip());
+    write(modelProxy.catData.meowmeow, coinFlip());
   }, 800);
   setInterval(() => {
-    write(model.catData.mice, range(Math.round(random(4))).map(i => coinFlip()));
-  }, 1600);
+    write(modelProxy.catData.mice, range(Math.round(random(4))).map(i => coinFlip()));
+  }, 600);
 
   return {
     style: {
       fontSize: '60px',
     },
-    children: htmlSwitch(model.mode, {
+    children: htmlSwitch(modelProxy.mode, {
       dog: [
         '🐶',
-        htmlIf(model.dogData.barkbark, '💬Bark bark!'),
+        htmlIf(modelProxy.dogData.barkbark, '💬Bark bark!'),
         br,
-        htmlRead(model.dogData.walkies, walkies => '🐾'.repeat(walkies)),
+        htmlRead(modelProxy.dogData.walkies, walkies => '🐾'.repeat(walkies)),
       ],
       cat: [
         '🐱',
-        htmlIf(model.catData.meowmeow, '💬Meow meow.'),
+        htmlIf(modelProxy.catData.meowmeow, '💬Meow meow.'),
         br,
-        htmlMap(model.catData.mice, mouse => mouse ? '🐀' : '🐁'),
+        htmlMapRead(modelProxy.catData.mice, mouse => mouse ? '🐀' : '🐁'),
       ],
     }),
   };

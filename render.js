@@ -20,6 +20,7 @@ import {
 } from './observable-json.js';
 import {
   lastItem,
+  range,
 } from './utils.js';
 
 /*
@@ -40,16 +41,6 @@ export interface ElementTemplate {
 
 class HtmlIf {
   constructor(condition: ReadingValue<bool>, trueBranch: Template, falseBranch: Template);
-  // TODO
-}
-
-class HtmlSwitch<T> {
-  constructor(value: ReadingValue<T>, interface { [value: T]: ReadingValue<Template> });
-  // TODO
-}
-
-class HtmlMap<T> {
-  constructor(value: ReadingValue<Array<T>>, (value: T) => Template);
   // TODO
 }
 
@@ -100,8 +91,12 @@ export function htmlSwitch(readingValue, switchTemplate) {
   });
 }
 
-export function htmlMap(readingValue, itemTemplateFunction=null) {
-  return htmlRead(readingValue, list => itemTemplateFunction ? list.map(itemTemplateFunction) : list);
+export function htmlMap(listProxy, itemTemplateFunction) {
+  return htmlRead(listProxy, list => range(list.length).map(i => itemTemplateFunction(listProxy[i])));
+}
+
+export function htmlMapRead(listProxy, itemTemplateFunction) {
+  return htmlRead(listProxy, list => range(list.length).map(i => itemTemplateFunction(list[i])));
 }
 
 export function flexColumn(...children) {
@@ -200,14 +195,6 @@ function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatT
     }
     render(container, readTemplate.consumer(value), flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
-}
-
-function renderSwitch(container, switchTemplate) {
-  // TODO
-}
-
-function renderMap(container, mapTemplate) {
-  // TODO
 }
 
 function renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {

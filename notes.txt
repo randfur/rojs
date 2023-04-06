@@ -14,6 +14,9 @@
   - Added a null template for if to use, could have used empty array but decided to support null.
   - Created dogCat example that uses all htmlX branching templates.
   - Seems to just work.
+- Added htmlMapRead() vs htmlMap().
+  - htmlMap's item template function takes an item proxy while htmlMapRead takes concrete items.
+  - htmlMap would be used if the items should continue to be independently reactive to changes in the items.
 
 # 2023-04-05
 - Trying implementation.
