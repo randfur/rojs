@@ -39,6 +39,8 @@
 - Implementation seems to be working.
   - Yay.
   - Updated resizing siblings example to use colours and more functional JS to be generic for a list of colours.
+- Made write() check for primitive equality and not notify watchers if no change.
+- Made array() join up consecutive strings.
 
 # 2023-04-03
 - Returning a FlatNodeTree isn't enough.

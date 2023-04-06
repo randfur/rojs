@@ -112,8 +112,9 @@ export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
   console.assert(proxyMutationAllowed);
   const proxyInternal = proxy[internalKey];
-  proxyInternal.writeJsonValue(value);
-  proxyInternal.notifyWatchers();
+  if (proxyInternal.writeJsonValue(value)) {
+    proxyInternal.notifyWatchers();
+  }
 }
 
 export function mutate(proxy, mutator) {
@@ -224,9 +225,19 @@ class ProxyInternal {
 
   writeJsonValue(json) {
     if (this.isRoot()) {
-      this.json = json;
+      if (!areEqualPrimitives(this.json, json)) {
+        this.json = json;
+        return true;
+      }
+      return false;
     }
-    this.parentProxyInternal.readJsonValue()[this.property] = json;
+
+    const parent = this.parentProxyInternal.readJsonValue();
+    if (!areEqualPrimitives(parent[this.property], json)) {
+      parent[this.property] = json;
+      return true;
+    }
+    return false;
   }
 
   notifyWatchers() {
@@ -317,5 +328,19 @@ class Watcher {
     }
 
     watcherStack.pop();
+  }
+}
+
+function areEqualPrimitives(a, b) {
+  switch (typeof a) {
+  case 'bigint':
+  case 'boolean':
+  case 'number':
+  case 'string':
+  case 'symbol':
+  case 'undefined':
+    return a === b;
+  default:
+    return false;
   }
 }
