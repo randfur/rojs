@@ -62,31 +62,20 @@ type FlatTree = Array<FlatTree> | Node;
 
 export function render(container, template, flatTreeRoot=[], flatTreeParent=flatTreeRoot, flatTreePath=[0], insertBeforeNode=null) {
   if (typeof template === 'string' || typeof template === 'number') {
-    return renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+    renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (isObservableJsonProxy(template)) {
-    return renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
+    renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (template instanceof Array) {
-    return renderArray(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
+    renderArray(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (typeof template === 'function') {
-    return renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
+    renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (template instanceof HtmlRead) {
-    return renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
-  } else if (template instanceof HtmlIf) {
-    return renderIf(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
-  } else if (template instanceof HtmlSwitch) {
-    return renderSwitch(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
-  } else if (template instanceof HtmlMap) {
-    return renderMap(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-    // TODO
+    renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (template === null) {
+    renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else {
     console.assert(typeof template === 'object');
-    return renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+    renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   }
 }
 
@@ -101,15 +90,18 @@ export function htmlRead(readingValue, consumer) {
   return new HtmlRead(readingValue, consumer);
 }
 
-class HtmlIf {
-  // TODO
+export function htmlIf(readingValue, template) {
+  return htmlRead(readingValue, value => value ? template : null);
 }
 
-class HtmlSwitch {
-  // TODO
+export function htmlSwitch(readingValue, switchTemplate) {
+  return htmlRead(readingValue, property => {
+    return property in switchTemplate ? switchTemplate[property] : null;
+  });
 }
 
-class HtmlMap {
+export function htmlMap(readingValue, itemTemplateFunction=null) {
+  return htmlRead(readingValue, list => itemTemplateFunction ? list.map(itemTemplateFunction) : list);
 }
 
 export function flexColumn(...children) {
@@ -149,7 +141,7 @@ function renderString(container, string, flatTreeRoot, flatTreeParent, flatTreeP
 
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
-    removeFlatTree(flatTreeParent[index]);
+    removeFlatTreeDom(flatTreeParent[index]);
     flatTreeParent[index] = textNode;
   } else {
     flatTreeParent.push(textNode);
@@ -166,7 +158,7 @@ function renderProxy(container, proxy, flatTreeRoot, flatTreeParent, flatTreePat
 
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
-    removeFlatTree(flatTreeParent[index]);
+    removeFlatTreeDom(flatTreeParent[index]);
     flatTreeParent[index] = textNode;
   } else {
     flatTreeParent.push(textNode);
@@ -180,7 +172,7 @@ function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, fla
 
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
-    removeFlatTree(flatTreeParent[index]);
+    removeFlatTreeDom(flatTreeParent[index]);
     flatTreeParent[index] = flatTree;
   } else {
     flatTreeParent.push(flatTree);
@@ -210,16 +202,22 @@ function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatT
   });
 }
 
-function renderIf(container, ifTemplate) {
-  // TODO
-}
-
 function renderSwitch(container, switchTemplate) {
   // TODO
 }
 
 function renderMap(container, mapTemplate) {
   // TODO
+}
+
+function renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+  const index = lastItem(flatTreePath);
+  if (index < flatTreeParent.length) {
+    removeFlatTreeDom(flatTreeParent[index]);
+    flatTreeParent[index] = null;
+  } else {
+    flatTreeParent.push(null);
+  }
 }
 
 function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -275,7 +273,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
 
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
-    removeFlatTree(flatTreeParent[index]);
+    removeFlatTreeDom(flatTreeParent[index]);
     flatTreeParent[index] = element;
   } else {
     flatTreeParent.push(element);
@@ -286,12 +284,12 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   onCreate?.(element);
 }
 
-function removeFlatTree(flatTree) {
+function removeFlatTreeDom(flatTree) {
   if (flatTree instanceof Array) {
     for (const subFlatTree of flatTree) {
-      removeFlatTree(subFlatTree);
+      removeFlatTreeDom(subFlatTree);
     }
-  } else {
+  } else if (flatTree !== null) {
     flatTree.parentNode.removeChild(flatTree);
   }
 }
@@ -324,7 +322,7 @@ function findFirstNode(flatTree) {
     }
     return null;
   } else {
-    console.assert(flatTree instanceof Node);
+    console.assert(flatTree instanceof Node || flatTree === null);
     return flatTree;
   }
 }

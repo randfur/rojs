@@ -35,6 +35,9 @@ import {
   div,
   flexRow,
   htmlRead,
+  htmlIf,
+  htmlSwitch,
+  htmlMap,
   render,
 } from './render.js';
 
@@ -42,16 +45,69 @@ export function reactiveExample() {
   render(
     document.body,
     flexRow(
-      div(resizingSiblings()),
-      div(dogCow()),
+      div(dogCat()),
+      // div(resizingSiblings()),
+      // div(dogCow()),
     ),
   );
+}
+
+function dogCat() {
+  const model = createObservableJsonProxy({
+    mode: 'dog',
+    dogData: {
+      barkbark: true,
+      walkies: true,
+    },
+    catData: {
+      meowmeow: true,
+      mice: [],
+    },
+  });
+
+  setInterval(() => {
+    write(model.mode, coinFlip() ? 'dog' : 'cat');
+  }, 2000);
+
+  setInterval(() => {
+    write(model.dogData.walkies, Math.round(random(4)));
+  }, 1500);
+  setInterval(() => {
+    write(model.dogData.barkbark, coinFlip());
+  }, 500);
+
+  setInterval(() => {
+    write(model.catData.meowmeow, coinFlip());
+  }, 800);
+  setInterval(() => {
+    write(model.catData.mice, range(Math.round(random(4))).map(i => coinFlip()));
+  }, 1600);
+
+  return {
+    style: {
+      fontSize: '60px',
+    },
+    children: htmlSwitch(model.mode, {
+      dog: [
+        '🐶',
+        htmlIf(model.dogData.barkbark, '💬Bark bark!'),
+        br,
+        htmlRead(model.dogData.walkies, walkies => '🐾'.repeat(walkies)),
+      ],
+      cat: [
+        '🐱',
+        htmlIf(model.catData.meowmeow, '💬Meow meow.'),
+        br,
+        htmlMap(model.catData.mice, mouse => mouse ? '🐀' : '🐁'),
+      ],
+    }),
+  };
 }
 
 function resizingSiblings() {
   const colours = ['red', 'yellow', 'lime', 'blue'];
 
-  let model = createObservableJsonProxy(
+  const model = createObservableJsonProxy(
     Object.fromEntries(
       colours.map(colour => [colour, 3])
     )

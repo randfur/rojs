@@ -36,7 +36,7 @@ export function createObservableJsonProxy(json) {
 }
 
 export function isObservableJsonProxy(object) {
-  return typeof object === 'object' && Boolean(object[internalKey]);
+  return object && typeof object === 'object' && Boolean(object[internalKey]);
 }
 
 export function printObservation(proxy) {
