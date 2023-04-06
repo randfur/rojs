@@ -45,9 +45,9 @@ export function reactiveExample() {
   render(
     document.body,
     flexRow(
+      div(resizingSiblings()),
+      div(dogCow()),
       div(dogCat()),
-      // div(resizingSiblings()),
-      // div(dogCow()),
     ),
   );
 }
