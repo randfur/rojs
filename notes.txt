@@ -19,6 +19,16 @@
   - Deeply nested data binding.
   - Direct re-rendering, no virtual DOM.
   - Experimental. Not production ready. Probably performs terribly and hard to use at scale.
+- Moved files into directory structure:
+  - src for library source files.
+  - examples for example source.
+  - docs for README.md resources.
+- Big WIP on the README.md file adding concrete examples.
+  - Created a the basic note taking app.
+    - How to have elements reference each other in their event handlers?
+      - Example is using getElementById().
+      - Doesn't scale well to many instances of a component that wants to reference hardcoded ids within its own namespace.
+  - Still writing out examples for all the template types.
 
 # 2023-04-06
 - Got a broken implementation working.

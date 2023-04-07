@@ -51,8 +51,12 @@ type FlatTree = Array<FlatTree> | Node;
 // TODO: Complete.
 */
 
+export {array} from './utils.js';
+
 export function render(container, template, flatTreeRoot=[], flatTreeParent=flatTreeRoot, flatTreePath=[0], insertBeforeNode=null) {
-  if (typeof template === 'string' || typeof template === 'number') {
+  if (template === null) {
+    renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (typeof template === 'string' || typeof template === 'number') {
     renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (isObservableJsonProxy(template)) {
     renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
@@ -62,8 +66,6 @@ export function render(container, template, flatTreeRoot=[], flatTreeParent=flat
     renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (template instanceof HtmlRead) {
     renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (template === null) {
-    renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else {
     console.assert(typeof template === 'object');
     renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
@@ -92,11 +94,15 @@ export function htmlSwitch(readingValue, switchTemplate) {
 }
 
 export function htmlMap(listProxy, itemTemplateFunction) {
-  return htmlRead(listProxy, list => range(list.length).map(i => itemTemplateFunction(listProxy[i])));
+  return htmlRead(listProxy, list => {
+    return range(list.length).map(i => itemTemplateFunction(listProxy[i], i));
+  });
 }
 
 export function htmlMapRead(listProxy, itemTemplateFunction) {
-  return htmlRead(listProxy, list => range(list.length).map(i => htmlRead(listProxy[i], itemTemplateFunction)));
+  return htmlRead(listProxy, list => {
+    return range(list.length).map(i => htmlRead(listProxy[i], item => itemTemplateFunction(item, i)));
+  });
 }
 
 export function flexColumn(...children) {
@@ -211,7 +217,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   let {
     tag='div',
     style={},
-    // TODO: events={},
+    events={},
     children=[],
     onCreate=null,
   } = elementTemplate;
@@ -232,9 +238,11 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     }
   });
 
-  // TODO: events
+  for (const [eventName, eventHandler] of Object.entries(events)) {
+    element.addEventListener(eventName, eventHandler);
+  }
 
-  for (let [attribute, readingValue] of Object.entries(elementTemplate)) {
+  for (const [attribute, readingValue] of Object.entries(elementTemplate)) {
     switch (attribute) {
     case 'tag':
     case 'style':
