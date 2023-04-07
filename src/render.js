@@ -115,6 +115,18 @@ export function flexColumn(...children) {
   });
 }
 
+export function tag(tag, ...children) {
+  return { tag, children };
+}
+
+export function button(text, click) {
+  return {
+    tag: 'button',
+    textContent: text,
+    events: { click },
+  };
+}
+
 export function flexRow(...children) {
   return ({
     style: {

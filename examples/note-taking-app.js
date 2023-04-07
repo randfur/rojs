@@ -4,6 +4,8 @@ import {
 } from '../src/observable-json.js';
 import {
   render,
+  tag,
+  button,
   htmlMapRead,
 } from '../src/render.js';
 
@@ -26,13 +28,6 @@ function deleteNote(index) {
 }
 
 // View
-function button(text, click) {
-  return {
-    tag: 'button',
-    textContent: text,
-    events: { click },
-  };
-}
 function consumeAddNoteField() {
   const textInput = document.getElementById('new-note-text');
   addNote(textInput.value);
@@ -43,13 +38,13 @@ render(
   document.body,
   [
     // Heading.
-    { tag: 'h1', textContent: 'Notes' },
+    tag('h1', 'Notes'),
 
     // List of notes.
     htmlMapRead(notesProxy, (note, i) => [
       button('❌', event => deleteNote(i)),
       note,
-      { tag: 'br' },
+      tag('br'),
     ]),
 
     // Add note input field.
