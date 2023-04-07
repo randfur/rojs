@@ -10,6 +10,15 @@
     - Terrible and stale, maybe something that's a parody of this.
     - All letters are replaced by emoji.
 - Removed old non reactive example.
+- Added readWrite() for additive mutations e.g. readWrite(model.count, count => count + 1).
+- Registered https://rojs.dev and put a placeholder site up.
+  - Maybe will use this as an official landing page one day.
+  - Created a rojs logo, looks like a Pacman tennis ball looking away from the camera with mouth open.
+- Came up with some tag lines to use in first impression documentation:
+  - HTML templating without the HTML.
+  - Deeply nested data binding.
+  - Direct re-rendering, no virtual DOM.
+  - Experimental. Not production ready. Probably performs terribly and hard to use at scale.
 
 # 2023-04-06
 - Got a broken implementation working.
