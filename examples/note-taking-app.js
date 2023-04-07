@@ -47,7 +47,7 @@ render(
 
     // List of notes.
     htmlMapRead(notesProxy, (note, i) => [
-      button('🞭', event => deleteNote(i)),
+      button('❌', event => deleteNote(i)),
       note,
       { tag: 'br' },
     ]),
