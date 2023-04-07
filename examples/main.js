@@ -22,14 +22,14 @@ import {
   range,
   sleep,
   enumerate,
-} from './utils.js';
+} from '../src/utils.js';
 import {
   createObservableJsonProxy,
   mutate,
   printObservation,
   read,
   write,
-} from './observable-json.js';
+} from '../src/observable-json.js';
 import {
   br,
   div,
@@ -39,7 +39,7 @@ import {
   htmlSwitch,
   htmlMapRead,
   render,
-} from './render.js';
+} from '../src/render.js';
 
 async function main() {
   render(
