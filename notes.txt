@@ -1,3 +1,6 @@
+# 2023-04-07
+- Removed old non reactive example.
+
 # 2023-04-06
 - Got a broken implementation working.
   - Updated flatTree reactive example to be resizingSiblings.
