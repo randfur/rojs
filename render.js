@@ -96,7 +96,7 @@ export function htmlMap(listProxy, itemTemplateFunction) {
 }
 
 export function htmlMapRead(listProxy, itemTemplateFunction) {
-  return htmlRead(listProxy, list => range(list.length).map(i => itemTemplateFunction(list[i])));
+  return htmlRead(listProxy, list => range(list.length).map(i => htmlRead(listProxy[i], itemTemplateFunction)));
 }
 
 export function flexColumn(...children) {

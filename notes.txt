@@ -1,3 +1,15 @@
+# 2023-04-07
+  - Changed htmlMapRead() to do an htmlRead on the individual items, having it just use the concrete types would be a footgun that users can do themselves via htmlRead(listProxy, list => list.map(itemTemplateFunction)).
+- Updating lists is easy to get wrong and will probably need more helper functions.
+  - Will add them as more examples are made.
+- Next examples to make:
+  - Example gallery.
+    - Pull out the debug view into its own component that all examples use.
+  - Tic tac toe game.
+  - Note taking app.
+    - Terrible and stale, maybe something that's a parody of this.
+    - All letters are replaced by emoji.
+
 # 2023-04-06
 - Got a broken implementation working.
   - Updated flatTree reactive example to be resizingSiblings.
