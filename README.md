@@ -114,7 +114,7 @@ A Rojs HTML template is one of:
   <div id="container">Test</div>
   ```
 
-- `ObservableJsonProxy`: Renders a string/number inside the ObservableJsonProxy, re-renders whenever it changes.
+- `ObservableJsonProxy`: Renders a string/number inside the `ObservableJsonProxy`, re-renders whenever it changes.
   ```javascript
   const modelProxy = createObservableJsonProxy('Original');
   render(container, modelProxy);
@@ -125,12 +125,12 @@ A Rojs HTML template is one of:
   <div id="container">Updated</div>
   ```
 
-- `Array` (of templates): Renders each sub template as siblings of each other.
+- `Array` (of templates): Renders each child template as siblings of each other including nested arrays, this has the effect of flattening a template array tree in the DOM.
   ```javascript
   const modelProxy = createObservableJsonProxy({
-    dog: { count: 4 },
+    dog: { count: 3 },
     cat: { count: 2 },
-    pony: { count: 0 },
+    pony: { count: 1 },
   });
   const animals = ['dog', 'cat', 'pony'];
   const br = { tag: 'br' };
@@ -140,37 +140,37 @@ A Rojs HTML template is one of:
     modelProxy[animal].count,
     br,
   ]));
-  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 10);
+  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 5);
   ```
   =>
   ```html
   <div id="container">
-    dog count: 4<br>
+    dog count: 3<br>
     cat count: 2<br>
-    pony count: 2<br>
+    pony count: 6<br>
   </div>
   ```
 
 - `Function`: Renders the template returned by the function. If the function read any ObservableJsonProxies and they change then the function will be re-rendered.
   ```javascript
   const modelProxy = createObservableJsonProxy({
-    dog: { count: 4 },
+    dog: { count: 3 },
     cat: { count: 2 },
-    pony: { count: 0 },
+    pony: { count: 1 },
   });
   const animals = ['dog', 'cat', 'pony'];
   function sum(list) {
     return list.reduce((a, b) => a + b);
   }
-  render(container, () => [
-    'Total count: ',
-    sum(animals.map(animal => read(modelProxy[animal].count))),
-  ]);
-  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 10);
+  render(container, [
+    'Total animal count: ',
+    () => sum(animals.map(animal => read(modelProxy[animal].count))),
+  ];
+  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 5);
   ```
   =>
   ```html
-  <div id="container">Total count: 16</div>
+  <div id="container">Total animal count: 11</div>
   ```
 
 - `HtmlRead` instance: This type is an implementation detail and never explicitly created by users of Rojs, instead one of the following helper functions is used instead:

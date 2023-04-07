@@ -29,6 +29,7 @@
       - Example is using getElementById().
       - Doesn't scale well to many instances of a component that wants to reference hardcoded ids within its own namespace.
   - Still writing out examples for all the template types.
+  - Need to explain ReadingValue to be able to use its type in helper funciton signatures.
 
 # 2023-04-06
 - Got a broken implementation working.
