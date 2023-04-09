@@ -20,10 +20,12 @@ import {
 } from '../src/observable-json.js';
 import {
   render,
-  tag,
-  button,
   htmlMapRead,
 } from '../src/render.js';
+import {
+  tag,
+  button,
+} from '../src/render-helpers.js';
 
 // Model
 const notesProxy = createObservableJsonProxy([]);

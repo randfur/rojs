@@ -28,55 +28,31 @@ import {
 
 import {ReadingValue} from './observable-json.js';
 
-export type Template = ElementTemplate | HtmlIf | HtmlSwitch | HtmlMap;
+export type Template = null | number | string | Array<Template> | ElementTemplate | HtmlRead | () => Template;
 
 export interface ElementTemplate {
   tag: string,
-  style: ReadingValue<interface {
+  style: ReadingValue<{
     [cssProperty: string]: ReadingValue<string>;
   }>;
-  children: ReadingValue<Array<Template>>;
+  children: Array<Template>;
   [attribute: string]: ReadingValue<string>;
 }
 
-class HtmlIf {
-  constructor(condition: ReadingValue<bool>, trueBranch: Template, falseBranch: Template);
-  // TODO
-}
+export function render(container: Node, template: Template);
 
-export function render(container: HTMLElement, elementTemplate: Template): NodeTree;
-
-type FlatTree = Array<FlatTree> | Node;
-
-// TODO: Complete.
+export function htmlRead<T>(readingValue: ReadingValue<T>, (value: T) => Template): HtmlRead;
+export function htmlIf(readingValue: ReadingValue<boolean>, Template): HtmlRead;
+export function htmlSwitch(readingValue: ReadingValue<T>, { [branch: T]: Template }): HtmlRead;
+export function htmlMap(readingValue: ReadingValue<Array<T>>, (proxy: ObservableJsonProxy) => Template): HtmlRead;
+export function htmlMapRead(readingValue: ReadingValue<Array<T>>, (value: T) => Template): HtmlRead;
 */
 
 export {array} from './utils.js';
 
-export function render(container, template, flatTreeRoot=[], flatTreeParent=flatTreeRoot, flatTreePath=[0], insertBeforeNode=null) {
-  if (template === null) {
-    renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (typeof template === 'string' || typeof template === 'number') {
-    renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (isObservableJsonProxy(template)) {
-    renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (template instanceof Array) {
-    renderArray(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (typeof template === 'function') {
-    renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else if (template instanceof HtmlRead) {
-    renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  } else {
-    console.assert(typeof template === 'object');
-    renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
-  }
-}
-
-class HtmlRead {
-  constructor(readingValue, consumer) {
-    this.readingValue = readingValue;
-    this.consumer = consumer;
-  }
+export function render(container, template) {
+  const flatTreeRoot = [];
+  renderImpl(container, template, flatTreeRoot, flatTreeRoot, [0], null);
 }
 
 export function htmlRead(readingValue, consumer) {
@@ -105,49 +81,57 @@ export function htmlMapRead(listProxy, itemTemplateFunction) {
   });
 }
 
-export function flexColumn(...children) {
-  return ({
-    style: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    children,
-  });
-}
-
-export function tag(tag, ...children) {
-  return { tag, children };
-}
-
-export function button(text, click) {
-  return {
-    tag: 'button',
-    textContent: text,
-    events: { click },
-  };
-}
-
-export function flexRow(...children) {
-  return ({
-    style: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    children,
-  });
-}
-
-export function div(...children) {
-  return { children };
-}
-
-export const br = { tag: 'br' };
-
 /*
 # Private
 
-TODO: write interface types.
+class HtmlRead<T> {
+  readingValue: ReadingValue<T>;
+  consumer: (value: T) => template;
+
+  constructor(readingValue: ReadingValue<T>, consumer: (value: T) => template);
+}
+
+type FlatTree = Array<FlatTree> | Node;
+
+function renderImpl(container: Node, template: Template, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderString(container: Node, template: string | number, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderProxy(container: Node, template: ObservableJsonProxy, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderArray(container: Node, template: Array<Template>, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderFunction(container: Node, template: () => Template, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderRead(container: Node, template: HtmlRead, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderNull(container: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderElement(container: Node, template: ElementTemplate, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+
+function removeFlatTreeDom(flatTree: FlatTree);
+function findNextNode(flatTreeParent: FlatTree, flatTreePath: Array<number>, pathIndex: number): Node | null;
+function findFirstNode(flatTree): Node | null;
 */
+
+class HtmlRead {
+  constructor(readingValue, consumer) {
+    this.readingValue = readingValue;
+    this.consumer = consumer;
+  }
+}
+
+function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+  if (template === null) {
+    renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (typeof template === 'string' || typeof template === 'number') {
+    renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (isObservableJsonProxy(template)) {
+    renderProxy(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (template instanceof Array) {
+    renderArray(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (typeof template === 'function') {
+    renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (template instanceof HtmlRead) {
+    renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else {
+    console.assert(typeof template === 'object');
+    renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  }
+}
 
 function renderString(container, string, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   const textNode = document.createTextNode(string);
@@ -193,7 +177,7 @@ function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, fla
 
   for (let i = 0; i < arrayTemplate.length; ++i) {
     const template = arrayTemplate[i];
-    render(container, template, flatTreeRoot, flatTree, flatTreePath.concat(i), insertBeforeNode);
+    renderImpl(container, template, flatTreeRoot, flatTree, flatTreePath.concat(i), insertBeforeNode);
   }
 }
 
@@ -202,7 +186,7 @@ function renderFunction(container, f, flatTreeRoot, flatTreeParent, flatTreePath
     if (runCount > 1) {
       insertBeforeNode = findNextNode(flatTreeRoot, flatTreePath);
     }
-    render(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+    renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
 }
 
@@ -211,11 +195,11 @@ function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatT
     if (runCount > 1) {
       insertBeforeNode = findNextNode(flatTreeRoot, flatTreePath);
     }
-    render(container, readTemplate.consumer(value), flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+    renderImpl(container, readTemplate.consumer(value), flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
 }
 
-function renderNull(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+function renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
     removeFlatTreeDom(flatTreeParent[index]);
@@ -275,7 +259,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   }
   const innerFlatTreeRoot = [];
   for (let i = 0; i < children.length; ++i) {
-    render(element, children[i], innerFlatTreeRoot, innerFlatTreeRoot, [i], insertBeforeNode);
+    renderImpl(element, children[i], innerFlatTreeRoot, innerFlatTreeRoot, [i], insertBeforeNode);
   }
 
   const index = lastItem(flatTreePath);

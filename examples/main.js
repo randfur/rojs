@@ -31,15 +31,17 @@ import {
   write,
 } from '../src/observable-json.js';
 import {
-  br,
-  div,
-  flexRow,
+  render,
   htmlRead,
   htmlIf,
   htmlSwitch,
   htmlMapRead,
-  render,
 } from '../src/render.js';
+import {
+  br,
+  div,
+  flexRow,
+} from '../src/render-helpers.js';
 
 async function main() {
   render(
