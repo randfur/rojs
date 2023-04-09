@@ -1,3 +1,23 @@
+# 2023-04-09
+- Referencing elements during template constructon.
+  - Add { ref: string | symbol } field to element template.
+  - Add ref(name: string | symbol) global function.
+  - Add/remove elements in global map that ref() looks up as elements are attached and detached.
+- List manipulation is going to need special functions.
+  - Having list templates completely re-render as items are added/removed is not going to work well.
+    - It disrupts focus traversal state.
+    - It will probably reset scroll state.
+  - Can maybe implement something in the base observable-json.js layer by having special writeListAppend() and writeListRemove() functions that trigger different watcher events.
+    - Could have a watchList() method that takes multiple callbacks for the different types of mutations.
+    - render.js can use these to recycle the child elements of htmlMap.
+  - Getting a bit messy but will probably be a necessary addition.
+- Example page.
+  - Want to split out the different examples and be able to show their source code along side their execution in a generic example showcase page.
+
+# 2023-04-08
+- Added tag(tag, ...children) as a shorthand for an element with text in it.
+  - A little better than defining `function h1(...children) { return { tag: 'h1', children }; }` all the time.
+
 # 2023-04-07
 - Changed htmlMapRead() to do an htmlRead on the individual items, having it just use the concrete types would be a footgun that users can do themselves via htmlRead(listProxy, list => list.map(itemTemplateFunction)).
 - Updating lists is easy to get wrong and will probably need more helper functions.

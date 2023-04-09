@@ -10,11 +10,13 @@ See live [examples](https://randfur.github.com/rojs/examples/).
 import {
   createObservableJsonProxy,
   mutate,
-} from './rojs/observable-json.js';
+} from '../src/observable-json.js';
 import {
   render,
+  tag,
+  button,
   htmlMapRead,
-} from './rojs/render.js';
+} from '../src/render.js';
 
 // Model
 const notesProxy = createObservableJsonProxy([]);
@@ -35,13 +37,6 @@ function deleteNote(index) {
 }
 
 // View
-function button(text, click) {
-  return {
-    tag: 'button',
-    textContent: text,
-    events: { click },
-  };
-}
 function consumeAddNoteField() {
   const textInput = document.getElementById('new-note-text');
   addNote(textInput.value);
@@ -52,13 +47,13 @@ render(
   document.body,
   [
     // Heading.
-    { tag: 'h1', textContent: 'Notes' },
+    tag('h1', 'Notes'),
 
     // List of notes.
     htmlMapRead(notesProxy, (note, i) => [
-      button('🞭', event => deleteNote(i)),
+      button('❌', event => deleteNote(i)),
       note,
-      { tag: 'br' },
+      tag('br'),
     ]),
 
     // Add note input field.
