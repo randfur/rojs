@@ -264,7 +264,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
       break;
     default:
       watch(readingValue, value => {
-        element[attribute] = value
+        element[attribute] = value;
       });
       break;
     }
