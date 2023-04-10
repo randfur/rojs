@@ -1,7 +1,7 @@
 # Rojs: Render Observable JSON
 Rojs is a toy reactive HTML Javascript framework inspired by [Solid](https://www.solidjs.com/).
 
-See live [examples](https://randfur.github.com/rojs/examples/).
+See live [examples](https://randfur.github.io/rojs/examples/).
 
 ## Example Usage
 [Note taking app](https://randfur.github.io/rojs/examples/note-taking-app.html).
