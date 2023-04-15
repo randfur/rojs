@@ -15,6 +15,9 @@
   - Want to split out the different examples and be able to show their source code along side their execution in a generic example showcase page.
 - Split out helper template functions into render-helpers.js.
 - Working on making the TypeScript interface doc comments match the latest render.js code.
+- Considering renaming the ObservableJsonProxy type to something like ModelProxy.
+  - Have to rename Rojs to Romp?? Nah.
+  - Maybe keep ObservableJsonProxy...
 
 # 2023-04-08
 - Added tag(tag, ...children) as a shorthand for an element with text in it.

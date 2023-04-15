@@ -23,7 +23,7 @@ export type ReadingValue<T> = ObservableJsonProxy | () => T | T;
 
 export function createObservableJsonProxy(json: Json): ObservableJsonProxy;
 export function isObservableJsonProxy(value: any): boolean;
-export function printObservation(proxy: ObservableJsonProxy);
+export function printObservation(proxy: ObservableJsonProxy): string;
 
 export function read(proxy: ObservableJsonProxy): Json;
 export function write(proxy: ObservableJsonProxy, value: Json);
