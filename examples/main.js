@@ -149,7 +149,7 @@ function dogCow() {
     },
     {
       tag: 'pre',
-      onCreate(element) {
+      onAttach(element) {
         setInterval(() => {
           element.textContent = printObservation(modelProxy);
         }, 100);

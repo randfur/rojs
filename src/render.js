@@ -117,6 +117,8 @@ class HtmlRead {
 function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   if (template === null) {
     renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (template instanceof Node) {
+    renderInsertNode(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode)
   } else if (typeof template === 'string' || typeof template === 'number') {
     renderString(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (isObservableJsonProxy(template)) {
@@ -133,18 +135,20 @@ function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreeP
   }
 }
 
-function renderString(container, string, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  const textNode = document.createTextNode(string);
-
+function renderInsertNode(container, node, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
     removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = textNode;
+    flatTreeParent[index] = node;
   } else {
-    flatTreeParent.push(textNode);
+    flatTreeParent.push(node);
   }
 
-  container.insertBefore(textNode, insertBeforeNode);
+  container.insertBefore(node, insertBeforeNode);
+}
+
+function renderString(container, string, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+  renderInsertNode(container, document.createTextNode(string), flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
 }
 
 function renderProxy(container, proxy, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -153,15 +157,7 @@ function renderProxy(container, proxy, flatTreeRoot, flatTreeParent, flatTreePat
     textNode.textContent = value;
   });
 
-  const index = lastItem(flatTreePath);
-  if (index < flatTreeParent.length) {
-    removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = textNode;
-  } else {
-    flatTreeParent.push(textNode);
-  }
-
-  container.insertBefore(textNode, insertBeforeNode);
+  renderInsertNode(container, textNode, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
 }
 
 function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -215,7 +211,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     style={},
     events={},
     children=[],
-    onCreate=null,
+    onAttach=null,
   } = elementTemplate;
 
   console.assert(typeof tag === 'string');
@@ -244,7 +240,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     case 'style':
     case 'events':
     case 'children':
-    case 'onCreate':
+    case 'onAttach':
       break;
     default:
       watch(readingValue, value => {
@@ -262,17 +258,9 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     renderImpl(element, children[i], innerFlatTreeRoot, innerFlatTreeRoot, [i], insertBeforeNode);
   }
 
-  const index = lastItem(flatTreePath);
-  if (index < flatTreeParent.length) {
-    removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = element;
-  } else {
-    flatTreeParent.push(element);
-  }
+  renderInsertNode(container, element, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
 
-  container.insertBefore(element, insertBeforeNode);
-
-  onCreate?.(element);
+  onAttach?.(element);
 }
 
 function removeFlatTreeDom(flatTree) {

@@ -1,3 +1,10 @@
+# 2023-06-15
+- Added renderInsertNode().
+  - Ability to provide your own HTMLElements or Nodes to insert into the render.
+  - Should be useful for creating a canvas separately that you manage the state of and have inserted into the rendered HTML layout.
+  - Refactored renderString(), renderProxy() and renderElement() to reuse renderInsertNode().
+    - Removes a bunch of copy paste code, turns out to be a generally useful abstraction internally as well as externally.
+
 # 2023-04-09
 - Referencing elements during template constructon.
   - Add { ref: string | symbol } field to element template.
