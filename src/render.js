@@ -59,8 +59,8 @@ export function htmlRead(readingValue, consumer) {
   return new HtmlRead(readingValue, consumer);
 }
 
-export function htmlIf(readingValue, template) {
-  return htmlRead(readingValue, value => value ? template : null);
+export function htmlIf(readingValue, trueTemplate, falseTemplate=null) {
+  return htmlRead(readingValue, value => value ? trueTemplate : falseTemplate);
 }
 
 export function htmlSwitch(readingValue, switchTemplate) {
