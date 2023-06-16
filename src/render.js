@@ -107,6 +107,9 @@ function findNextNode(flatTreeParent: FlatTree, flatTreePath: Array<number>, pat
 function findFirstNode(flatTree): Node | null;
 */
 
+const kFlatTreeParent = Symbol();
+const kFlatTreeIndex = Symbol();
+
 class HtmlRead {
   constructor(readingValue, consumer) {
     this.readingValue = readingValue;
@@ -136,14 +139,15 @@ function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreeP
 }
 
 function renderInsertNode(container, node, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  const index = lastItem(flatTreePath);
-  if (index < flatTreeParent.length) {
-    removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = node;
-  } else {
-    flatTreeParent.push(node);
+  const {
+    [kFlatTreeParent]: existingParent,
+    [kFlatTreeIndex]: existingIndex,
+  } = node;
+  if (existingParent) {
+    existingParent[existingIndex] = null;
   }
 
+  setInFlatTree(flatTreeParent, flatTreePath, node);
   container.insertBefore(node, insertBeforeNode);
 }
 
@@ -162,14 +166,7 @@ function renderProxy(container, proxy, flatTreeRoot, flatTreeParent, flatTreePat
 
 function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   const flatTree = [];
-
-  const index = lastItem(flatTreePath);
-  if (index < flatTreeParent.length) {
-    removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = flatTree;
-  } else {
-    flatTreeParent.push(flatTree);
-  }
+  setInFlatTree(flatTreeParent, flatTreePath, flatTree);
 
   for (let i = 0; i < arrayTemplate.length; ++i) {
     const template = arrayTemplate[i];
@@ -196,13 +193,7 @@ function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatT
 }
 
 function renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  const index = lastItem(flatTreePath);
-  if (index < flatTreeParent.length) {
-    removeFlatTreeDom(flatTreeParent[index]);
-    flatTreeParent[index] = null;
-  } else {
-    flatTreeParent.push(null);
-  }
+  setInFlatTree(flatTreeParent, flatTreePath, null);
 }
 
 function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -261,6 +252,21 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   renderInsertNode(container, element, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
 
   onAttach?.(element);
+}
+
+function setInFlatTree(flatTreeParent, flatTreePath, flatTree) {
+  const index = lastItem(flatTreePath);
+  if (index < flatTreeParent.length) {
+    removeFlatTreeDom(flatTreeParent[index]);
+    flatTreeParent[index] = flatTree;
+  } else {
+    flatTreeParent.push(flatTree);
+  }
+
+  if (flatTree instanceof Node) {
+    flatTree[kFlatTreeParent] = flatTreeParent;
+    flatTree[kFlatTreeIndex] = index;
+  }
 }
 
 function removeFlatTreeDom(flatTree) {
