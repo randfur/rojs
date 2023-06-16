@@ -91,9 +91,10 @@ class HtmlRead<T> {
   constructor(readingValue: ReadingValue<T>, consumer: (value: T) => template);
 }
 
-type FlatTree = Array<FlatTree> | Node;
+type FlatTree = Array<FlatTree> | Node | null;
 
 function renderImpl(container: Node, template: Template, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderInsertNode(container: Node, node: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderString(container: Node, template: string | number, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderProxy(container: Node, template: ObservableJsonProxy, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderArray(container: Node, template: Array<Template>, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
@@ -102,6 +103,10 @@ function renderRead(container: Node, template: HtmlRead, flatTreeRoot: FlatTree,
 function renderNull(container: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderElement(container: Node, template: ElementTemplate, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 
+const kFlatTreeParent: Symbol;
+const kFlatTreeIndex: Symbol;
+
+function setInFlatTree(flatTreeParent: FlatTree, flatTreePath: Array<number>, flatTree: FlatTree) {
 function removeFlatTreeDom(flatTree: FlatTree);
 function findNextNode(flatTreeParent: FlatTree, flatTreePath: Array<number>, pathIndex: number): Node | null;
 function findFirstNode(flatTree): Node | null;
