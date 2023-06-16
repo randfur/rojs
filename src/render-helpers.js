@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {join} from './utils.js';
+
 export function flexColumn(...children) {
   return ({
     style: {
@@ -51,3 +53,7 @@ export function div(...children) {
 }
 
 export const br = { tag: 'br' };
+
+export function brJoin(...children) {
+  return join(children, br);
+}
