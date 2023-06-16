@@ -44,8 +44,8 @@ export function render(container: Node, template: Template);
 export function htmlRead<T>(readingValue: ReadingValue<T>, (value: T) => Template): HtmlRead;
 export function htmlIf(readingValue: ReadingValue<boolean>, Template): HtmlRead;
 export function htmlSwitch(readingValue: ReadingValue<T>, { [branch: T]: Template }): HtmlRead;
-export function htmlMap(readingValue: ReadingValue<Array<T>>, (proxy: ObservableJsonProxy) => Template): HtmlRead;
-export function htmlMapRead(readingValue: ReadingValue<Array<T>>, (value: T) => Template): HtmlRead;
+export function htmlMap(readingValue: ReadingValue<Array<T>>, (proxy: ObservableJsonProxy, index: number) => Template): HtmlRead;
+export function htmlMapRead(readingValue: ReadingValue<Array<T>>, (value: T, index: number) => Template): HtmlRead;
 */
 
 export {array} from './utils.js';
