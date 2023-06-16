@@ -1,3 +1,18 @@
+# 2023-06-16
+- renderInsertNode() had a problem where a reparented element would get removed from its destination at the end of a new render.
+  - Problem:
+    - This was due to the flatTree bookkeeping.
+    - The inserted element would be put in the flatTree somewhere.
+    - Later when the proxy changes and a different template is rendered the element could be inserted into a different flatTree position but is still there in the old position.
+    - When whatever needs to render in that position will remove the stuff there from the DOM, this removes our inserted element even though it got removed from that place in the DOM already.
+    - We need to update its place in the flatTree whenever it gets reinserted somewhere else.
+  - Solution:
+    - Abstracted out setInFlatTree() which was copy pasted 3 times.
+    - Made it store the flatTree position on the node (if it was a node).
+    - Updated renderInsertNode() to check for an existing flatTree location on the node and set that to null.
+    - This means later when whatever template needs to render in that spot in the flatTree the element won't get erroneously removed from the DOM.
+  - Yay it works.
+
 # 2023-06-15
 - Added renderInsertNode().
   - Ability to provide your own HTMLElements or Nodes to insert into the render.

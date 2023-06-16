@@ -107,9 +107,6 @@ function findNextNode(flatTreeParent: FlatTree, flatTreePath: Array<number>, pat
 function findFirstNode(flatTree): Node | null;
 */
 
-const kFlatTreeParent = Symbol();
-const kFlatTreeIndex = Symbol();
-
 class HtmlRead {
   constructor(readingValue, consumer) {
     this.readingValue = readingValue;
@@ -139,14 +136,6 @@ function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreeP
 }
 
 function renderInsertNode(container, node, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  const {
-    [kFlatTreeParent]: existingParent,
-    [kFlatTreeIndex]: existingIndex,
-  } = node;
-  if (existingParent) {
-    existingParent[existingIndex] = null;
-  }
-
   setInFlatTree(flatTreeParent, flatTreePath, node);
   container.insertBefore(node, insertBeforeNode);
 }
@@ -254,7 +243,22 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   onAttach?.(element);
 }
 
+const kFlatTreeParent = Symbol();
+const kFlatTreeIndex = Symbol();
+
 function setInFlatTree(flatTreeParent, flatTreePath, flatTree) {
+  if (flatTree instanceof Node) {
+    // If the node was already in a flatTree, null out its old place so it
+    // doesn't get removed by whatever goes there later.
+    const {
+      [kFlatTreeParent]: existingParent,
+      [kFlatTreeIndex]: existingIndex,
+    } = flatTree;
+    if (existingParent) {
+      existingParent[existingIndex] = null;
+    }
+  }
+
   const index = lastItem(flatTreePath);
   if (index < flatTreeParent.length) {
     removeFlatTreeDom(flatTreeParent[index]);
@@ -264,6 +268,8 @@ function setInFlatTree(flatTreeParent, flatTreePath, flatTree) {
   }
 
   if (flatTree instanceof Node) {
+    // Tell the node where it is in the flatTree so it can null itself later in
+    // the above code.
     flatTree[kFlatTreeParent] = flatTreeParent;
     flatTree[kFlatTreeIndex] = index;
   }
