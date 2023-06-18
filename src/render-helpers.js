@@ -54,6 +54,10 @@ export function div(...children) {
 
 export const br = { tag: 'br' };
 
-export function brJoin(...children) {
+export function joinSpace(...children) {
+  return join(children, ' ');
+}
+
+export function joinBr(...children) {
   return join(children, br);
 }

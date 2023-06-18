@@ -28,6 +28,7 @@ export function printObservation(proxy: ObservableJsonProxy): string;
 export function read(proxy: ObservableJsonProxy): Json;
 export function write(proxy: ObservableJsonProxy, value: Json | (value: Json) => Json);
 export function readWrite(proxy: ObservableJsonProxy, f: (value: json) => json);
+export function readMap(proxy: ObservableJsonProxy, f: (value: json) => any);
 export function mutate(proxy: ObservableJsonProxy, mutator: (value: json) => void);
 export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: json) => void);
 */
@@ -123,6 +124,10 @@ export function write(proxy, value) {
 
 export function readWrite(proxy, f) {
   write(proxy, f(read(proxy)));
+}
+
+export function readMap(proxy, f) {
+  return f(read(proxy));
 }
 
 export function mutate(proxy, mutator) {
