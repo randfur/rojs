@@ -26,7 +26,7 @@ export function isObservableJsonProxy(value: any): boolean;
 export function printObservation(proxy: ObservableJsonProxy): string;
 
 export function read(proxy: ObservableJsonProxy): Json;
-export function write(proxy: ObservableJsonProxy, value: Json);
+export function write(proxy: ObservableJsonProxy, value: Json | (value: Json) => Json);
 export function readWrite(proxy: ObservableJsonProxy, f: (value: json) => json);
 export function mutate(proxy: ObservableJsonProxy, mutator: (value: json) => void);
 export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: json) => void);
@@ -113,6 +113,9 @@ export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
   console.assert(proxyMutationAllowed);
   const proxyInternal = proxy[internalKey];
+  if (typeof value === 'function') {
+    value = value(proxyInternal.readJsonValue());
+  }
   if (proxyInternal.writeJsonValue(value)) {
     proxyInternal.notifyWatchers();
   }
