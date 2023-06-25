@@ -120,10 +120,13 @@ export function write(proxy, value) {
   if (proxyInternal.writeJsonValue(value)) {
     proxyInternal.notifyWatchers();
   }
+  return value;
 }
 
 export function readWrite(proxy, f) {
-  write(proxy, f(read(proxy)));
+  const value = f(read(proxy));
+  write(proxy, value);
+  return value;
 }
 
 export function readMap(proxy, f) {
