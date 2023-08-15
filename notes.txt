@@ -1,3 +1,94 @@
+# 2023-08-15
+- Maybe rename ObservableJsonProxy to Model.
+  - Have createModel() instead of createObservableJsonProxy().
+- Component class idea.
+  - class Component { model: Model; view: UiTemplate }
+  - render() will detect Component instances and use their view.
+  - read/write/etc() will detect Component instances and recurse down their model.
+    - Maybe too magical, should maybe instead auto read/write inside nested models.
+  - What happens with event handlers in their view? How do they access the component?
+  - Sketch:
+    class Test extends Component {
+      constructor() {
+        this.model = createModel({
+          a: 1,
+          b: 2,
+        });
+        this.view = [{
+          textContent: this.model.a,
+        }, {
+          textContent: this.model.b,
+        }, {
+          tag: 'button',
+          events: {
+            click: event => {
+              readWrite(this.model.a, a => a + Math.floor(Math.random() * 10));
+              readWrite(this.model.b, b => b + Math.floor(Math.random() * 10));
+            },
+          },
+        }];
+      }
+    }
+    render(document.body, Test());
+  - Should work probably??
+  - Need to sketch a component composing another one:
+    class TestA extends Component {
+      constructor() {
+        this.model = createModel({
+          text: 'Hello',
+        });
+        this.view = this.model.text;
+      }
+    }
+    class TestB extends Component {
+      constructor() {
+        this.model = createModel({
+          a: new TestA(),
+        });
+        this.view = [
+          this.model.a,
+          {
+            tag: 'button',
+            events: {
+              click: event => {
+                readWrite(this.model.a.model.text, text => test + '.');
+              },
+            },
+          },
+        ];
+      }
+    }
+    render(document.body, new TestB());
+  - Alternate version where component models are auto traversed:
+    class TestA extends Component {
+      constructor() {
+        this.model = createModel({
+          text: 'Hello',
+        });
+        this.view = this.text;
+      }
+    }
+    class TestB extends Component {
+      constructor() {
+        this.model = createModel({
+          a: new TestA(),
+        });
+        this.view = [
+          this.a,
+          {
+            tag: 'button',
+            events: {
+              click: event => {
+                readWrite(this.a.text, text => test + '.');
+              },
+            },
+          },
+        ];
+      }
+    }
+    render(document.body, new TestB());
+  - Might be a bit too magical but it does look nicer...
+
 # 2023-06-16
 - renderInsertNode() had a problem where a reparented element would get removed from its destination at the end of a new render.
   - Problem:
