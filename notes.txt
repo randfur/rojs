@@ -1,3 +1,8 @@
+# 2023-08-16
+- Added Component class to render.js.
+- Added component.html example.
+- Just recursing render down component.view seems to work fine.
+
 # 2023-08-15
 - Maybe rename ObservableJsonProxy to Model.
   - Have createModel() instead of createObservableJsonProxy().
@@ -79,7 +84,7 @@
             tag: 'button',
             events: {
               click: event => {
-                readWrite(this.a.text, text => test + '.');
+                readWrite(this.a.text, text => text + '.');
               },
             },
           },
@@ -87,7 +92,8 @@
       }
     }
     render(document.body, new TestB());
-  - Might be a bit too magical but it does look nicer...
+    - Might be a bit too magical but it does look nicer...
+    - No this doesn't work because `this` isn't a proxy.
 
 # 2023-06-16
 - renderInsertNode() had a problem where a reparented element would get removed from its destination at the end of a new render.

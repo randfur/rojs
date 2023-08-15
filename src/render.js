@@ -15,8 +15,9 @@
  */
 
 import {
-  watch,
+  createObservableJsonProxy,
   isObservableJsonProxy,
+  watch,
 } from './observable-json.js';
 import {
   lastItem,
@@ -81,6 +82,13 @@ export function htmlMapRead(listProxy, itemTemplateFunction) {
   });
 }
 
+export class Component {
+  constructor({model}) {
+    this.model = createObservableJsonProxy(model);
+    this.view = null;
+  }
+}
+
 /*
 # Private
 
@@ -134,10 +142,16 @@ function renderImpl(container, template, flatTreeRoot, flatTreeParent, flatTreeP
     renderFunction(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else if (template instanceof HtmlRead) {
     renderRead(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
+  } else if (template instanceof Component) {
+    renderComponent(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   } else {
     console.assert(typeof template === 'object');
     renderElement(container, template, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   }
+}
+
+function renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+  setInFlatTree(flatTreeParent, flatTreePath, null);
 }
 
 function renderInsertNode(container, node, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -150,12 +164,12 @@ function renderString(container, string, flatTreeRoot, flatTreeParent, flatTreeP
 }
 
 function renderProxy(container, proxy, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  const textNode = document.createTextNode('');
-  watch(proxy, value => {
-    textNode.textContent = value;
+  watch(proxy, (value, runCount) => {
+    if (runCount > 1) {
+      insertBeforeNode = findNextNode(flatTreeRoot, flatTreePath);
+    }
+    renderImpl(container, value, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
   });
-
-  renderInsertNode(container, textNode, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);
 }
 
 function renderArray(container, arrayTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
@@ -186,8 +200,8 @@ function renderRead(container, readTemplate, flatTreeRoot, flatTreeParent, flatT
   });
 }
 
-function renderNull(container, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
-  setInFlatTree(flatTreeParent, flatTreePath, null);
+function renderComponent(container, component, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
+  renderImpl(container, component.view, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode)
 }
 
 function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
