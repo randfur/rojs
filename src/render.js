@@ -207,37 +207,51 @@ function renderComponent(container, component, flatTreeRoot, flatTreeParent, fla
 function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   let {
     tag='div',
-    style={},
-    events={},
-    children=[],
+    class:classValue=null,
+    style=null,
+    events=null,
+    shadow=null,
+    children=null,
     onAttach=null,
   } = elementTemplate;
 
   console.assert(typeof tag === 'string');
   const element = document.createElement(tag);
 
-  watch(style, style => {
-    element.removeAttribute('style');
-    for (const [property, readingValue] of Object.entries(style)) {
-      watch(readingValue, value => {
-        if (property.startsWith('-')) {
-          element.style.setProperty(property, value);
-        } else {
-          element.style[property] = value;
-        }
-      });
-    }
-  });
+  if (classValue !== null) {
+    watch(classValue, classValue => {
+      element.classList = classValue.split(' ');
+    });
+  }
 
-  for (const [eventName, eventHandler] of Object.entries(events)) {
-    element.addEventListener(eventName, eventHandler);
+  if (style !== null) {
+    watch(style, style => {
+      element.removeAttribute('style');
+      for (const [property, readingValue] of Object.entries(style)) {
+        watch(readingValue, value => {
+          if (property.startsWith('-')) {
+            element.style.setProperty(property, value);
+          } else {
+            element.style[property] = value;
+          }
+        });
+      }
+    });
+  }
+
+  if (events !== null) {
+    for (const [eventName, eventHandler] of Object.entries(events)) {
+      element.addEventListener(eventName, eventHandler);
+    }
   }
 
   for (const [attribute, readingValue] of Object.entries(elementTemplate)) {
     switch (attribute) {
     case 'tag':
+    case 'class':
     case 'style':
     case 'events':
+    case 'shadow':
     case 'children':
     case 'onAttach':
       break;
@@ -249,12 +263,15 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     }
   }
 
-  if (!(children instanceof Array)) {
-    children = [children];
+  if (shadow !== null) {
+    const shadowRoot = element.attachShadow({mode: 'open'});
+    const innerFlatTreeRoot = [];
+    renderImpl(shadowRoot, shadow, innerFlatTreeRoot, innerFlatTreeRoot, [0], null);
   }
-  const innerFlatTreeRoot = [];
-  for (let i = 0; i < children.length; ++i) {
-    renderImpl(element, children[i], innerFlatTreeRoot, innerFlatTreeRoot, [i], insertBeforeNode);
+
+  if (children !== null) {
+    const innerFlatTreeRoot = [];
+    renderImpl(element, children, innerFlatTreeRoot, innerFlatTreeRoot, [0], null);
   }
 
   renderInsertNode(container, element, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode);

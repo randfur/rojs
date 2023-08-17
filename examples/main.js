@@ -22,6 +22,7 @@ function main() {
     'component',
     'dog-cow',
     'note-taking-app',
+    'shadow',
   ];
   render(document.body, [
     tag('h1', 'Rojs examples'),

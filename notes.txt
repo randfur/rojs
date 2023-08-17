@@ -1,3 +1,29 @@
+# 2023-08-18
+- Thinking about how to style components.
+  - Looking up how Vue JS does it.
+    - Vue component templates must have a root element.
+    - This doesn't work so well with Rojs which doesn't have that restriction.
+    - Vue doesn't seem to use shadowDom either, it must do a compile rewrite to uncollide ids and class names.
+  - Want to use shadowDom to scope stylesheets to a component's view.
+    - Maybe add a cssScope(stylesheet, children) render primitive.
+      - This can create an element with a shadow DOM.
+      - What about defining the element's properties?
+    - Maybe this should be part of the element template API, to define shadow DOM children separate to DOM children.
+      - Creating a style sheet in this will be just adding a regular tag('style', stylesheetContents) element.
+- Added 'shadow' property to element template.
+  - It just works.
+- Cleaned up element template a bit:
+  - Stopped passing insertBeforeNode to inner renders.
+    - This is only needed for adding nodes inside a list of nodes, within an element there's a new flat tree so the insert before shouldn't reference something in a different flat tree.
+  - Made the element template properties default to null instead of "zero" versions of their types and added if checks for each.
+  - Made the children rendering not detect if it's an array or not, there's no need as renderImpl is capable of splatting out an array exactly the same as it was doing.
+    - This also saves a redundant flat tree level by removing `children = [children]`.
+- Added 'class' property to element template.
+  - Turns out element.class = 'class' doesn't set the element's class.
+  - Needs to use the classList member.
+  - `class` is a special keyword but is okay to use as object keys.
+  - Added special behaviour for 'class' property to have it set classList.
+
 # 2023-08-17
 - Tweaked component example a bit, added flex box and separator divs.
 - Added index page for examples directory.

@@ -54,6 +54,13 @@ export function div(...children) {
 
 export const br = { tag: 'br' };
 
+export function style(stylesheetText) {
+  return {
+    tag: 'style',
+    textContent: stylesheetText,
+  };
+}
+
 export function joinSpace(...children) {
   return join(children, ' ');
 }
