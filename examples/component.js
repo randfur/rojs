@@ -16,7 +16,8 @@
 
 import {Component, render} from '../src/render.js';
 import {joinSpace, joinBr, button} from '../src/render-helpers.js';
-import {mutate} from '../src/observable-json.js';
+import {join} from '../src/utils.js';
+import {read, mutate} from '../src/observable-json.js';
 
 class Kitchen extends Component {
   constructor() {
@@ -30,13 +31,30 @@ class Kitchen extends Component {
     this.view = joinBr(
       joinSpace(
         this.model.name,
-        button('Add food', () => {
+        button('Add food', event => {
           mutate(this.model.foods, foods => {
             foods.push(new Food());
           });
         }),
       ),
-      this.model.foods,
+      {
+        style: {
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        },
+        children: () => join(
+          read(this.model.foods),
+          {
+            style: {
+              width: '10px',
+              height: '80px',
+              backgroundColor: 'teal',
+              borderRadius: '5px',
+            },
+          },
+        ),
+      },
     );
   }
 }

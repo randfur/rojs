@@ -61,3 +61,23 @@ export function joinSpace(...children) {
 export function joinBr(...children) {
   return join(children, br);
 }
+
+export function ol(...children) {
+  return {
+    tag: 'ol',
+    children: children.map(child => ({
+      tag: 'li',
+      children: child,
+    })),
+  };
+}
+
+export function ul(...children) {
+  return {
+    tag: 'ul',
+    children: children.map(child => ({
+      tag: 'li',
+      children: child,
+    })),
+  };
+}
