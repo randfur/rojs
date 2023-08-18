@@ -98,51 +98,72 @@ interface ElementTemplate {
     <td>Instantiated HTML</td>
   </tr>
   <tr>
-    <td>```null```</td>
+    <td>
+      ```null```
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`Node`</td>
+    <td>
+      `Node`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`string | number`</td>
+    <td>
+      `string | number`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`ObservableJsonProxy`</td>
+    <td>
+      `ObservableJsonProxy`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`Array&lt;Template&gt;`</td>
+    <td>
+      `Array&lt;Template&gt;`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`() => Template`</td>
+    <td>
+      `() => Template`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`HtmlRead`</td>
+    <td>
+      `HtmlRead`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
   <tr>
-    <td>`Component`</td>
+    <td>
+      `Component`
+    </td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
   </tr>
-    <td>`ElementTemplate`</td>
+    <td>
+      `ElementTemplate`
+    </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
