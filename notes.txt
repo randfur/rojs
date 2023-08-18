@@ -23,6 +23,12 @@
   - Needs to use the classList member.
   - `class` is a special keyword but is okay to use as object keys.
   - Added special behaviour for 'class' property to have it set classList.
+- Updated https://rojs.dev to point to https://randfur.github.io/rojs instead of using Google Sites.
+- Readme needs updating.
+  - Documenting render() is quite a lot to write, overwhelming to read also probably.
+  - Maybe break it up into general rendering and reactive rendering with links to examples.
+  - Started rewriting the entire thing.
+  - Creating multiline tables in markdown requires HTML.
 
 # 2023-08-17
 - Tweaked component example a bit, added flex box and separator divs.

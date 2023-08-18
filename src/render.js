@@ -29,14 +29,27 @@ import {
 
 import {ReadingValue} from './observable-json.js';
 
-export type Template = null | number | string | Array<Template> | ElementTemplate | HtmlRead | () => Template;
+export type Template =
+  null |
+  Node |
+  string |
+  number |
+  ObservableJsonProxy |
+  Array<Template> |
+  () => Template |
+  HtmlRead |
+  Component |
+  ElementTemplate;
 
 export interface ElementTemplate {
-  tag: string,
-  style: ReadingValue<{
+  tag?: string;
+  class?: ReadingValue<string>;
+  style?: ReadingValue<{
     [cssProperty: string]: ReadingValue<string>;
   }>;
-  children: Array<Template>;
+  events?: { [eventName: String]: (event: Event) => void },
+  shadow?: Template;
+  children?: Template;
   [attribute: string]: ReadingValue<string>;
 }
 
@@ -102,13 +115,14 @@ class HtmlRead<T> {
 type FlatTree = Array<FlatTree> | Node | null;
 
 function renderImpl(container: Node, template: Template, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderNull(container: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderInsertNode(container: Node, node: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderString(container: Node, template: string | number, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderProxy(container: Node, template: ObservableJsonProxy, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderArray(container: Node, template: Array<Template>, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderFunction(container: Node, template: () => Template, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderRead(container: Node, template: HtmlRead, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
-function renderNull(container: Node, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
+function renderComponent(container: Node, template: Component, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 function renderElement(container: Node, template: ElementTemplate, flatTreeRoot: FlatTree, flatTreeParent: FlatTree, flatTreePath: Array<number>, insertBeforeNode: Node | null);
 
 const kFlatTreeParent: Symbol;

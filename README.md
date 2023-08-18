@@ -1,193 +1,157 @@
 # Rojs: Render Observable JSON
-Rojs is a toy reactive HTML Javascript framework inspired by [Solid](https://www.solidjs.com/).
+Rojs is a toy reactive HTML JavaScript framework inspired by [Solid](https://www.solidjs.com/).
 
-See live [examples](https://randfur.github.io/rojs/examples/).
-
-## Example Usage
-[Note taking app](https://randfur.github.io/rojs/examples/note-taking-app.html).
-
-```javascript
-import {
-  createObservableJsonProxy,
-  mutate,
-} from '../src/observable-json.js';
-import {
-  render,
-  tag,
-  button,
-  htmlMapRead,
-} from '../src/render.js';
-
-// Model
-const notesProxy = createObservableJsonProxy([]);
-
-// Controller
-function addNote(noteText) {
-  if (noteText === '') {
-    return;
-  }
-  mutate(notesProxy, notes => {
-    notes.push(noteText);
-  });
-}
-function deleteNote(index) {
-  mutate(notesProxy, notes => {
-    notes.splice(index, 1);
-  });
-}
-
-// View
-function consumeAddNoteField() {
-  const textInput = document.getElementById('new-note-text');
-  addNote(textInput.value);
-  textInput.value = '';
-  textInput.focus();
-}
-render(
-  document.body,
-  [
-    // Heading.
-    tag('h1', 'Notes'),
-
-    // List of notes.
-    htmlMapRead(notesProxy, (note, i) => [
-      button('❌', event => deleteNote(i)),
-      note,
-      tag('br'),
-    ]),
-
-    // Add note input field.
-    {
-      tag: 'input',
-      type: 'text',
-      id: 'new-note-text',
-      events: {
-        keyup: event => {
-          if (event.code === 'Enter') {
-            consumeAddNoteField();
-          }
-        },
-      },
-    },
-    button('Add', consumeAddNoteField),
-  ],
-);
-```
-
-This generates HTML like:
-```html
-<body>
-  <h1>Notes</h1>
-  <button>🞭</button>Note 1<br>
-  <button>🞭</button>Note 2<br>
-  <button>🞭</button>Note 3<br>
-  <input type="text" id="new-note-text"><button>Add</button>
-</body>
-```
+- [GitHub](https://github.com/randfur/rojs)
+- [Live examples](examples/)
 
 ## Key features
 
-### HTML templating without the HTML.
-The templating engine uses native JavaScript data types.
+### Render JS defined HTML templates
 
-A Rojs HTML template is one of:
-- `null`: Renders nothing.
-  ```javascript
-  render(container, null);
-  ```
-  =>
-  ```html
-  <div id="container"></div>
-  ```
+The entry point to Rojs is the `render(container, template)` function; this instantiates `template` as HTML inside a `container` DOM node.
 
-- string/number: Rendered as plain text.
-  ```javascript
-  render(container, 'Test');
-  ```
-  =>
-  ```html
-  <div id="container">Test</div>
-  ```
+```js
+import {render} from './src/render.js';
 
-- `ObservableJsonProxy`: Renders a string/number inside the `ObservableJsonProxy`, re-renders whenever it changes.
-  ```javascript
-  const modelProxy = createObservableJsonProxy('Original');
-  render(container, modelProxy);
-  write(modelProxy, 'Updated');
-  ```
-  =>
-  ```html
-  <div id="container">Updated</div>
-  ```
+render(document.body, 'Hello world');
+```
 
-- `Array` (of templates): Renders each child template as siblings of each other including nested arrays, this has the effect of flattening a template array tree in the DOM.
-  ```javascript
-  const modelProxy = createObservableJsonProxy({
-    dog: { count: 3 },
-    cat: { count: 2 },
-    pony: { count: 1 },
-  });
-  const animals = ['dog', 'cat', 'pony'];
-  const br = { tag: 'br' };
-  render(container, animals.map(animal => [
-    animal,
-    ' count: ',
-    modelProxy[animal].count,
-    br,
-  ]));
-  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 5);
-  ```
-  =>
-  ```html
-  <div id="container">
-    dog count: 3<br>
-    cat count: 2<br>
-    pony count: 6<br>
-  </div>
-  ```
+Unlike most reactive frameworks Rojs declares its HTML templates using pure JavaScript.
 
-- `Function`: Renders the template returned by the function. If the function read any ObservableJsonProxies and they change then the function will be re-rendered.
-  ```javascript
-  const modelProxy = createObservableJsonProxy({
-    dog: { count: 3 },
-    cat: { count: 2 },
-    pony: { count: 1 },
-  });
-  const animals = ['dog', 'cat', 'pony'];
-  function sum(list) {
-    return list.reduce((a, b) => a + b);
-  }
-  render(container, [
-    'Total animal count: ',
-    () => sum(animals.map(animal => read(modelProxy[animal].count))),
-  ];
-  readWrite(modelProxy.pony.count, ponyCount => ponyCount + 5);
-  ```
-  =>
-  ```html
-  <div id="container">Total animal count: 11</div>
-  ```
+See [reference](#render) for template format.
 
-- `HtmlRead` instance: This type is an implementation detail and never explicitly created by users of Rojs, instead one of the following helper functions is used instead:
-  - `htmlRead(value, consumer)`: Short for `new HtmlRead(value, consumer)`.
-  - `htmlIf(condition, template)`:
-  - `htmlSwitch(value, templateRoutes)`:
-  - `htmlMap`:
-  - `htmlMapRead`:
+### Reactive data
 
-- Element object: A raw JavaScript object containing a `tag`, `style`, `events`, `children` sub templates and any other standard Element attribute.
+ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](observablejsonproxy) for usage of the proxy object.
 
-### Deeply nested data binding.
+```js
+import {read, watch, write} from './src/observable-json.js';
 
-### Direct re-rendering, no virtual DOM.
+const value = createObservableJsonProxy('Hello');
 
-### Experimental. Not production ready. Probably performs terribly and hard to use at scale.
+console.log(value);
+// Console: Proxy
+
+console.log(read(value));
+// Console: 'Hello'
+
+watch(value, value => {
+  console.log(value);
+});
+// Console: 'Hello'
+
+write(value, 'world');
+// Console: 'world'
+```
 
 ## Rojs vs Solid
 The key design differences to Solid are:
 - Instead of Signal it has `ObservableJsonProxy`; this functions similarly but is a JSON value which can be observed at any point in the JSON tree.
 - Instead of HTML syntax it uses pure JavaScript to define UI templates.
 - Instead of Effects it has `watch()` which takes two parameters; one that `read()`s ObservableJsonProxies and one that consumes the result. The read+consume action is repeated whenever one of the `read()` ObservableJsonProxies changes.
+
+## Reference
+
+### `render()`
+
+```ts
+function render(container: Node, template: Template);
+```
+
+Renders `template` as HTML inside `container`. Uses of `ObservableJsonProxy` inside template will be reactive and automatically update the HTML on change.
+
+#### Supporting types
+
+```ts
+type Template =
+  null |
+  Node |
+  string |
+  number |
+  ObservableJsonProxy |
+  Array<Template> |
+  () => Template |
+  HtmlRead |
+  Component |
+  ElementTemplate;
+
+interface ElementTemplate {
+  tag?: string;
+  class?: ReadingValue<string>;
+  style?: ReadingValue<{
+    [cssProperty: string]: ReadingValue<string>;
+  }>;
+  events?: { [eventName: String]: (event: Event) => void },
+  shadow?: Template;
+  children?: Template;
+  [attribute: string]: ReadingValue<string>;
+}
+```
+
+#### Template variants
+
+<table>
+  <tr>
+    <td>Template type</td>
+    <td>Description</td>
+    <td>Example usage</td>
+    <td>Instantiated HTML</td>
+  </tr>
+  <tr>
+    <td>`null`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`Node`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`string | number`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`ObservableJsonProxy`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`Array&lt;Template&gt;`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`() => Template`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`HtmlRead`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>`Component`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+    <td>`ElementTemplate`</td>
+  </tr>
+</table>
+
+### ObservableJsonProxy
+
+TODO
 
 ## Contributing
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
