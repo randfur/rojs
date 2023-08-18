@@ -112,8 +112,8 @@ export function read(proxy) {
 
 export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
-  console.assert(proxyMutationAllowed);
   const proxyInternal = proxy[internalKey];
+  console.assert(proxyMutationAllowed.get(proxyInternal) ?? true);
   if (typeof value === 'function') {
     value = value(proxyInternal.readJsonValue());
   }
@@ -134,22 +134,31 @@ export function readMap(proxy, f) {
 }
 
 export function mutate(proxy, mutator) {
-  console.assert(proxyMutationAllowed);
   const proxyInternal = proxy[internalKey];
+  console.assert(proxyMutationAllowed.get(proxyInternal) ?? true);
   mutator(proxyInternal.readJsonValue());
   proxyInternal.notifyWatchers();
 }
 
 export function watch(readingValue, consumer) {
-  const oldProxyMutationAllowed = proxyMutationAllowed;
-  proxyMutationAllowed = false;
+  let oldProxyMutationAllowed = null;
+  let proxyInternal = null;
+  if (isObservableJsonProxy(readingValue)) {
+    proxyInternal = readingValue[internalKey];
+    oldProxyMutationAllowed = proxyMutationAllowed.get(proxyInternal) ?? true;
+    proxyMutationAllowed.set(proxyInternal, false);
+  }
+
   if (isObservableJsonProxy(readingValue) || typeof readingValue === 'function') {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
   } else {
     consumer(readingValue, /*runCount=*/1);
   }
-  proxyMutationAllowed = oldProxyMutationAllowed;
+
+  if (isObservableJsonProxy(readingValue)) {
+    proxyMutationAllowed.set(proxyInternal, oldProxyMutationAllowed);
+  }
 }
 
 /*
@@ -188,7 +197,7 @@ class Watcher<T> {
 */
 
 const internalKey = Symbol();
-let proxyMutationAllowed = true;
+const proxyMutationAllowed = new Map();
 const watcherStack = [];
 let currentNotifyId = 0;
 let pendingNotify = false;
@@ -269,11 +278,12 @@ class ProxyInternal {
 
     pendingNotify = true;
     requestAnimationFrame(() => {
-      const oldProxyMutationAllowed = proxyMutationAllowed;
-      proxyMutationAllowed = false;
       ++currentNotifyId;
 
       for (const proxyInternal of pendingNotifyProxyInternals) {
+        const oldProxyMutationAllowed = proxyMutationAllowed.get(proxyInternal) ?? true;
+        proxyMutationAllowed.set(proxyInternal, false);
+
         const watchers = new Set(proxyInternal.watchers);
         while (watchers.size > 0) {
           let watcher = watchers[Symbol.iterator]().next().value;
@@ -294,10 +304,10 @@ class ProxyInternal {
             watcher.run();
           }
         }
+        proxyMutationAllowed.set(proxyInternal, oldProxyMutationAllowed);
       }
       pendingNotifyProxyInternals.clear();
 
-      proxyMutationAllowed = oldProxyMutationAllowed;
       pendingNotify = false;
     });
   }

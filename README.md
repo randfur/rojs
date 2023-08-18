@@ -14,7 +14,7 @@ Unlike most reactive frameworks Rojs declares its HTML templates using pure Java
 
 See [reference](#render) for template formats.
 
-### Basic render example
+### Render example
 
 [Live example](https://rojs.dev/examples/colours.html)
 
@@ -63,34 +63,62 @@ Rendered HTML:
 
 ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](#observablejsonproxy) for usage of the proxy object.
 
-### Basic ObservableJsonProxy example
+`render()` will watch any proxies used in the template and re-render affected sections of the HTML when their value changes. This is the reactive rendering feature of Rojs.
+
+### ObservableJsonProxy example
 
 [Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ```js
-import {createObservableJsonProxy, read, watch, write} from './src/observable-json.js';
+import {render} from '../src/render.js';
+import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/observable-json.js';
 
 const value = createObservableJsonProxy('Hello');
+const logs = createObservableJsonProxy([]);
 
-console.log(value);
-// Console: Proxy
+addLog(value);
+// Log: Proxy
 
-console.log(read(value));
-// Console: 'Hello'
+addLog(read(value));
+// Log: 'Hello'
 
 watch(value, value => {
-  console.log(value);
+  addLog(value);
 });
-// Console: 'Hello'
+// Log: 'Hello'
 
-write(value, 'world');
-// Console: 'world'
+write(value, 'Hello world');
+// Log: 'Hello world'
 // This re-invoked the callback passed to watch() with the new value.
+
+function addLog(x) {
+  console.log(x);
+  mutate(logs, logs => {
+    logs.push(isObservableJsonProxy(x) ? 'Proxy' : x);
+  });
+}
+
+function p(...children) {
+  return { tag: 'p', children };
+}
+
+render(document.body, [
+  p(
+    'Value: ',
+    value,
+    { tag: 'br' },
+    {
+      tag: 'button',
+      textContent: 'Add !',
+      events: { click: event => readWrite(value, value => value + '!') },
+    },
+  ),
+  p(
+    'Logs: ',
+    { tag: 'pre', textContent: () => read(logs).join('\n') },
+  ),
+]);
 ```
-
-### Reactive rendering
-
-TODO
 
 ## Reference
 

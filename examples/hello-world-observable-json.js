@@ -14,25 +14,51 @@
  * limitations under the License.
  */
 
-import {createObservableJsonProxy, isObservableJsonProxy, read, watch, write} from '../src/observable-json.js';
-
-function log(x) {
-  console.log(x);
-  document.querySelector('#output').textContent += (isObservableJsonProxy(x) ? 'Proxy' : x)  + '\n';
-}
+import {render} from '../src/render.js';
+import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/observable-json.js';
 
 const value = createObservableJsonProxy('Hello');
+const logs = createObservableJsonProxy([]);
 
-log(value);
-// Console: Proxy
+addLog(value);
+// Log: Proxy
 
-log(read(value));
-// Console: 'Hello'
+addLog(read(value));
+// Log: 'Hello'
 
 watch(value, value => {
-  log(value);
+  addLog(value);
 });
-// Console: 'Hello'
+// Log: 'Hello'
 
-write(value, 'world');
-// Console: 'world'
+write(value, 'Hello world');
+// Log: 'Hello world'
+// This re-invoked the callback passed to watch() with the new value.
+
+function addLog(x) {
+  console.log(x);
+  mutate(logs, logs => {
+    logs.push(isObservableJsonProxy(x) ? 'Proxy' : x);
+  });
+}
+
+function p(...children) {
+  return { tag: 'p', children };
+}
+
+render(document.body, [
+  p(
+    'Value: ',
+    value,
+    { tag: 'br' },
+    {
+      tag: 'button',
+      textContent: 'Add !',
+      events: { click: event => readWrite(value, value => value + '!') },
+    },
+  ),
+  p(
+    'Logs: ',
+    { tag: 'pre', textContent: () => read(logs).join('\n') },
+  ),
+]);

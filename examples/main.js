@@ -19,6 +19,7 @@ import {tag, ul} from '../src/render-helpers.js'
 
 function main() {
   const examples = [
+    'colours',
     'component',
     'dog-cow',
     'hello-world-observable-json',
