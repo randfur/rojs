@@ -19,6 +19,8 @@ See [reference](#render) for template formats.
 [Live example](https://rojs.dev/examples/colours.html)
 
 ```js
+import {render} from './src/render.js';
+
 const colours = [
   'red',
   'orange',
@@ -70,8 +72,8 @@ ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to wat
 [Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ```js
-import {render} from '../src/render.js';
-import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/observable-json.js';
+import {render} from './src/render.js';
+import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from './src/observable-json.js';
 
 const value = createObservableJsonProxy('Hello');
 const logs = createObservableJsonProxy([]);
