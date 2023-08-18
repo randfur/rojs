@@ -17,48 +17,53 @@
 import {render} from '../src/render.js';
 import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/observable-json.js';
 
-const value = createObservableJsonProxy('Hello');
-const logs = createObservableJsonProxy([]);
+function main() {
+  const textProxy = createObservableJsonProxy('Hello');
+  addLog(textProxy); // Log: Proxy
 
-addLog(value);
-// Log: Proxy
+  // read() reads the text inside a proxy.
+  addLog(read(textProxy)); // Log: 'Hello'
 
-addLog(read(value));
-// Log: 'Hello'
+  // watch() reads the value in a proxy and passes it to the callback.
+  // The callback is re-invoked whenever the proxy's value is updated.
+  watch(textProxy, text => addLog(text)); // Log: 'Hello'
 
-watch(value, value => {
-  addLog(value);
-});
-// Log: 'Hello'
+  // write() sets the value inside a proxy.
+  write(textProxy, 'Hello world'); // Log: 'Hello world'
+  // This logged the text in the proxy due to the watch() callback above being re-invoked.
 
-write(value, 'Hello world');
-// Log: 'Hello world'
-// This re-invoked the callback passed to watch() with the new value.
+  // Render the contents of textProxy and logsProxy and include a button that updates textProxy.
+  render(document.body, [
+    p(
+      'Text: ',
+      textProxy,
+      {tag: 'br'},
+      {
+        tag: 'button',
+        events: {click(event) { readWrite(textProxy, text => text + '!'); }},
+        textContent: 'Add !',
+      },
+    ),
+    p(
+      'Logs:',
+      {tag: 'pre', textContent: () => read(logsProxy).join('\n')},
+    ),
+  ]);
+}
 
+// Using an ObservableJsonProxy for the logs so it can be rendered.
+const logsProxy = createObservableJsonProxy([]);
 function addLog(x) {
   console.log(x);
-  mutate(logs, logs => {
+  // mutate() gives you a handle to the value inside a proxy allowing you to mutate it.
+  mutate(logsProxy, logs => {
     logs.push(isObservableJsonProxy(x) ? 'Proxy' : x);
   });
 }
 
+// You can use helper functions to make your templates more succinct.
 function p(...children) {
-  return { tag: 'p', children };
+  return {tag: 'p', children};
 }
 
-render(document.body, [
-  p(
-    'Value: ',
-    value,
-    { tag: 'br' },
-    {
-      tag: 'button',
-      textContent: 'Add !',
-      events: { click: event => readWrite(value, value => value + '!') },
-    },
-  ),
-  p(
-    'Logs:',
-    { tag: 'pre', textContent: () => read(logs).join('\n') },
-  ),
-]);
+main();
