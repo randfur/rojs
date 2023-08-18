@@ -98,13 +98,11 @@ interface ElementTemplate {
     <td>Instantiated HTML</td>
   </tr>
   <tr>
-    <td>
-
+<td>
 ```js
 null
 ```
-
-    </td>
+</td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
