@@ -16,6 +16,8 @@ See [reference](#render) for template formats.
 
 ### Basic render example
 
+[Live example](https://rojs.dev/examples/colours.html)
+
 ```js
 const colours = [
   'red',
@@ -56,13 +58,14 @@ Rendered HTML:
 </body>
 */
 ```
-[Live example](https://rojs.dev/examples/colours.html)
 
 ### Observable JSON
 
 ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](#observablejsonproxy) for usage of the proxy object.
 
 ### Basic ObservableJsonProxy example
+
+[Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ```js
 import {createObservableJsonProxy, read, watch, write} from './src/observable-json.js';
@@ -84,7 +87,6 @@ write(value, 'world');
 // Console: 'world'
 // This re-invoked the callback passed to watch() with the new value.
 ```
-[Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ### Reactive rendering
 
