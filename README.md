@@ -99,7 +99,9 @@ interface ElementTemplate {
   </tr>
   <tr>
     <td>
-      ```null```
+      ```js
+      null
+      ```
     </td>
     <td>TODO</td>
     <td>TODO</td>
