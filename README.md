@@ -98,7 +98,7 @@ interface ElementTemplate {
     <td>Instantiated HTML</td>
   </tr>
   <tr>
-    <td>`null`</td>
+    <td>```null```</td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
@@ -141,11 +141,11 @@ interface ElementTemplate {
   </tr>
   <tr>
     <td>`Component`</td>
-    <td>TODO</td>
-    <td>TODO</td>
-    <td>TODO</td>
   </tr>
     <td>`ElementTemplate`</td>
+    <td>TODO</td>
+    <td>TODO</td>
+    <td>TODO</td>
   </tr>
 </table>
 
