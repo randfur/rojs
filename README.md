@@ -44,9 +44,10 @@ render(document.body, [
     })),
   },
 ]);
+```
 
-/*
 Rendered HTML:
+```html
 <body>
   <h1>Colours</h1>
   <div style="display: flex;">
@@ -58,7 +59,6 @@ Rendered HTML:
     <div style="background-color: purple; padding: 20px; font-size: 20px;">purple</div>
   </div>
 </body>
-*/
 ```
 
 ### Observable JSON
@@ -116,10 +116,27 @@ render(document.body, [
     },
   ),
   p(
-    'Logs: ',
+    'Logs:',
     { tag: 'pre', textContent: () => read(logs).join('\n') },
   ),
 ]);
+```
+
+Rendered HTML (prior to button being pressed):
+```html
+<body>
+  <p>
+    Value: Hello world<br>
+    <button>Add !</button>
+  </p>
+  <p>
+    Logs:
+    <pre>Proxy
+Hello
+Hello
+Hello world</pre>
+  </p>
+</body>
 ```
 
 ## Reference

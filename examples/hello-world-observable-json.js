@@ -58,7 +58,7 @@ render(document.body, [
     },
   ),
   p(
-    'Logs: ',
+    'Logs:',
     { tag: 'pre', textContent: () => read(logs).join('\n') },
   ),
 ]);
