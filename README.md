@@ -2,7 +2,7 @@
 Rojs is a toy reactive HTML JavaScript framework inspired by [Solid](https://www.solidjs.com/).
 
 - [GitHub](https://github.com/randfur/rojs)
-- [Live examples](examples/)
+- [Live examples](https://rojs.dev/examples/)
 
 ## Key features
 
@@ -13,7 +13,7 @@ The entry point to Rojs is the `render(container, template)` function; this inst
 ```js
 render(document.body, 'Hello world');
 ```
-[Live example](examples/hello-world-render.html)
+[Live example](https://rojs.dev/examples/hello-world-render.html)
 
 Unlike most reactive frameworks Rojs declares its HTML templates using pure JavaScript.
 
@@ -42,7 +42,7 @@ watch(value, value => {
 write(value, 'world');
 // Console: 'world'
 ```
-[Live example](examples/hello-world-observable-json.html)
+[Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ## Reference
 
