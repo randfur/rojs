@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-import {render} from '../src/render.js'
-import {tag, ul} from '../src/render-helpers.js'
+import {createObservableJsonProxy, isObservableJsonProxy, read, watch, write} from '../src/observable-json.js';
 
-function main() {
-  const examples = [
-    'component',
-    'dog-cow',
-    'hello-world-observable-json',
-    'hello-world-render',
-    'note-taking-app',
-    'shadow',
-  ];
-  render(document.body, [
-    tag('h1', 'Rojs examples'),
-    ul(
-      ...examples.map(example => ({
-        tag: 'a',
-        href: `${example}.html`,
-        textContent: example,
-      })),
-    ),
-  ]);
+function log(x) {
+  console.log(x);
+  document.querySelector('#output').textContent += (isObservableJsonProxy(x) ? 'Proxy' : x)  + '\n';
 }
 
-main();
+const value = createObservableJsonProxy('Hello');
+
+log(value);
+// Console: Proxy
+
+log(read(value));
+// Console: 'Hello'
+
+watch(value, value => {
+  log(value);
+});
+// Console: 'Hello'
+
+write(value, 'world');
+// Console: 'world'

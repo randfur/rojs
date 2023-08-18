@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-import {render} from '../src/render.js'
-import {tag, ul} from '../src/render-helpers.js'
+import {render} from '../src/render.js';
 
-function main() {
-  const examples = [
-    'component',
-    'dog-cow',
-    'hello-world-observable-json',
-    'hello-world-render',
-    'note-taking-app',
-    'shadow',
-  ];
-  render(document.body, [
-    tag('h1', 'Rojs examples'),
-    ul(
-      ...examples.map(example => ({
-        tag: 'a',
-        href: `${example}.html`,
-        textContent: example,
-      })),
-    ),
-  ]);
-}
-
-main();
+render(document.body, 'Hello world');

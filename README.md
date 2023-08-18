@@ -11,10 +11,9 @@ Rojs is a toy reactive HTML JavaScript framework inspired by [Solid](https://www
 The entry point to Rojs is the `render(container, template)` function; this instantiates `template` as HTML inside a `container` DOM node.
 
 ```js
-import {render} from './src/render.js';
-
 render(document.body, 'Hello world');
 ```
+[Live example](examples/hello-world-render.html)
 
 Unlike most reactive frameworks Rojs declares its HTML templates using pure JavaScript.
 
@@ -25,7 +24,7 @@ See [reference](#render) for template format.
 ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](#observablejsonproxy) for usage of the proxy object.
 
 ```js
-import {read, watch, write} from './src/observable-json.js';
+import {createObservableJsonProxy, read, watch, write} from './src/observable-json.js';
 
 const value = createObservableJsonProxy('Hello');
 
@@ -43,12 +42,7 @@ watch(value, value => {
 write(value, 'world');
 // Console: 'world'
 ```
-
-## Rojs vs Solid
-The key design differences to Solid are:
-- Instead of Signal it has `ObservableJsonProxy`; this functions similarly but is a JSON value which can be observed at any point in the JSON tree.
-- Instead of HTML syntax it uses pure JavaScript to define UI templates.
-- Instead of Effects it has `watch()` which takes two parameters; one that `read()`s ObservableJsonProxies and one that consumes the result. The read+consume action is repeated whenever one of the `read()` ObservableJsonProxies changes.
+[Live example](examples/hello-world-observable-json.html)
 
 ## Reference
 
