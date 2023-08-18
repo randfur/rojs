@@ -22,7 +22,7 @@ See [reference](#render) for template format.
 
 ### Reactive data
 
-ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](observablejsonproxy) for usage of the proxy object.
+ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](#observablejsonproxy) for usage of the proxy object.
 
 ```js
 import {read, watch, write} from './src/observable-json.js';
