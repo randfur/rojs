@@ -10,7 +10,7 @@ Rojs is a toy reactive HTML JavaScript framework inspired by [Solid](https://www
 
 The entry point to Rojs is the `render(container, template)` function; this instantiates `template` as HTML inside a `container` DOM node.
 
-Unlike most reactive frameworks Rojs declares its HTML templates using pure JavaScript.
+Unlike most reactive frameworks Rojs declares its HTML templates using vanilla uncompiled JavaScript.
 
 See [reference](#render) for template formats.
 
@@ -63,9 +63,11 @@ Rendered HTML:
 
 ### Observable JSON
 
-ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value. See [reference](#observablejsonproxy) for usage of the proxy object.
+ObservableJsonProxy is a proxy wrapper for a JSON value. This can be used to watch for changes to the value.
 
 `render()` will watch any proxies used in the template and re-render affected sections of the HTML when their value changes. This is the reactive rendering feature of Rojs.
+
+See [reference](#observablejsonproxy) for all capabilities of the proxy object.
 
 ### ObservableJsonProxy example
 
@@ -109,7 +111,7 @@ function main() {
   ]);
 }
 
-// Using an ObservableJsonProxy for the logs so it can be rendered.
+// Using an ObservableJsonProxy for the logs so it can be rendered reactively.
 const logsProxy = createObservableJsonProxy([]);
 function addLog(x) {
   console.log(x);

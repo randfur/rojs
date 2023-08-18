@@ -51,7 +51,7 @@ function main() {
   ]);
 }
 
-// Using an ObservableJsonProxy for the logs so it can be rendered.
+// Using an ObservableJsonProxy for the logs so it can be rendered reactively.
 const logsProxy = createObservableJsonProxy([]);
 function addLog(x) {
   console.log(x);
