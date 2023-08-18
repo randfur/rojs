@@ -100,7 +100,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`null`
+```ts
+null
+```
 
 </td>
     <td>TODO</td>
@@ -110,7 +112,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`Node`
+```ts
+Node
+```
 
 </td>
     <td>TODO</td>
@@ -120,7 +124,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`string | number`
+```ts
+string | number
+```
 
 </td>
     <td>TODO</td>
@@ -130,7 +136,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`ObservableJsonProxy`
+```ts
+ObservableJsonProxy
+```
 
 </td>
     <td>TODO</td>
@@ -140,7 +148,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`Array&lt;Template&gt;`
+```ts
+Array<Template>
+```
 
 </td>
     <td>TODO</td>
@@ -150,7 +160,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`() => Template`
+```ts
+() => Template
+```
 
 </td>
     <td>TODO</td>
@@ -160,7 +172,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`HtmlRead`
+```ts
+HtmlRead
+```
 
 </td>
     <td>TODO</td>
@@ -170,7 +184,9 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`Component`
+```ts
+Component
+```
 
 </td>
     <td>TODO</td>
@@ -179,7 +195,9 @@ interface ElementTemplate {
   </tr>
 <td>
 
-`ElementTemplate`
+```ts
+ElementTemplate
+```
 
 </td>
     <td>TODO</td>
