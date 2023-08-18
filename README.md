@@ -212,7 +212,7 @@ interface ElementTemplate {
   <tr>
 <td>
 
-`Array&lt;Template&gt;`
+`Array\<Template>`
 
 </td>
     <td>TODO</td>
