@@ -17,42 +17,42 @@
 import {join} from './utils.js';
 
 export function flexColumn(...children) {
-  return ({
+  return {
     style: {
       display: 'flex',
       flexDirection: 'column',
     },
     children,
-  });
+  };
 }
 
 export function tag(tag, ...children) {
-  return { tag, children };
+  return {tag, children};
 }
 
 export function button(text, click) {
   return {
     tag: 'button',
     textContent: text,
-    events: { click },
+    events: {click},
   };
 }
 
 export function flexRow(...children) {
-  return ({
+  return {
     style: {
       display: 'flex',
       flexDirection: 'row',
     },
     children,
-  });
+  };
 }
 
 export function div(...children) {
-  return { children };
+  return {children};
 }
 
-export const br = { tag: 'br' };
+export const br = {tag: 'br'};
 
 export function style(stylesheetText) {
   return {
