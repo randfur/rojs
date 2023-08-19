@@ -188,12 +188,15 @@ interface ElementTemplate {
 #### Template variants
 
 <table>
+<!-- Table headers -->
   <tr>
     <td>Template type</td>
     <td>Description</td>
     <td>Example usage</td>
     <td>Instantiated HTML</td>
   </tr>
+
+<!-- null row -->
   <tr>
 <td>
 
@@ -204,6 +207,8 @@ interface ElementTemplate {
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- Node row -->
   <tr>
 <td>
 
@@ -214,6 +219,8 @@ interface ElementTemplate {
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- string | number row -->
   <tr>
 <td>
 
@@ -224,6 +231,8 @@ interface ElementTemplate {
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- ObservableJsonProxy row -->
   <tr>
 <td>
 
@@ -234,26 +243,32 @@ interface ElementTemplate {
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- Array row -->
   <tr>
 <td>
 
-Array&lt;Template&gt;
+Array
 
 </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- Function row -->
   <tr>
 <td>
 
-`() => Template`
+Function
 
 </td>
     <td>TODO</td>
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- HtmlRead row -->
   <tr>
 <td>
 
@@ -264,6 +279,8 @@ Array&lt;Template&gt;
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- Component row -->
   <tr>
 <td>
 
@@ -274,6 +291,9 @@ Array&lt;Template&gt;
     <td>TODO</td>
     <td>TODO</td>
   </tr>
+
+<!-- ElementTemplate row -->
+  <tr>
 <td>
 
 `ElementTemplate`
