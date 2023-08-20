@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import {render, tag, ul} from '../src/rojs.js'
+import {
+  render,
+  tag,
+  ul,
+} from '../src/rojs.js'
 
 function main() {
   const examples = [

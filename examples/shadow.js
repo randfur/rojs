@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import {render, style, tag} from '../src/rojs.js';
+import {
+  render,
+  style,
+  tag,
+} from '../src/rojs.js';
 
 render(document.body, {
   shadow: [

@@ -15,12 +15,12 @@
  */
 
 import {
+  button,
   createObservableJsonProxy,
+  htmlMapRead,
   mutate,
   render,
-  htmlMapRead,
   tag,
-  button,
 } from '../src/rojs.js';
 
 // Model

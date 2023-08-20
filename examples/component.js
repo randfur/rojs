@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import {Component, render, joinSpace, joinBr, button, join, read, mutate} from '../src/rojs.js';
+import {
+  button,
+  Component,
+  join,
+  joinBr,
+  joinSpace,
+  mutate,
+  read,
+  render,
+} from '../src/rojs.js';
 
 class Kitchen extends Component {
   constructor() {
