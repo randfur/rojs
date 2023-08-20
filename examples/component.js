@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, render} from '../src/render.js';
-import {joinSpace, joinBr, button} from '../src/render-helpers.js';
-import {join} from '../src/utils.js';
-import {read, mutate} from '../src/observable-json.js';
+import {Component, render, joinSpace, joinBr, button, join, read, mutate} from '../src/rojs.js';
 
 class Kitchen extends Component {
   constructor() {

@@ -1,5 +1,7 @@
 # 2023-08-20
 - Added default super constructor for Component to start off with a null model.
+- Added rojs.js file that just re-exports everything public in the Rojs library so clients don't need to figure out which library file to import.
+- TODO: Update all examples to use it.
 
 # 2023-08-18
 - Thinking about how to style components.

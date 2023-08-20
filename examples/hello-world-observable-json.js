@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import {render} from '../src/render.js';
-import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/observable-json.js';
+import {render, createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from '../src/rojs.js';
 
 function main() {
   const textProxy = createObservableJsonProxy('Hello');

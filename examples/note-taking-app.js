@@ -17,15 +17,11 @@
 import {
   createObservableJsonProxy,
   mutate,
-} from '../src/observable-json.js';
-import {
   render,
   htmlMapRead,
-} from '../src/render.js';
-import {
   tag,
   button,
-} from '../src/render-helpers.js';
+} from '../src/rojs.js';
 
 // Model
 const notesProxy = createObservableJsonProxy([]);

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import {render} from '../src/render.js'
-import {tag, ul} from '../src/render-helpers.js'
+import {render, tag, ul} from '../src/rojs.js'
 
 function main() {
   const examples = [

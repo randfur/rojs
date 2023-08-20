@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import {render} from '../src/render.js';
+import {render} from '../src/rojs.js';
 
 render(document.body, 'Hello world');

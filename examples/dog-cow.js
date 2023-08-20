@@ -22,26 +22,20 @@ import {
   range,
   sleep,
   enumerate,
-} from '../src/utils.js';
-import {
   createObservableJsonProxy,
   mutate,
   printObservation,
   read,
   write,
-} from '../src/observable-json.js';
-import {
   render,
   htmlRead,
   htmlIf,
   htmlSwitch,
   htmlMapRead,
-} from '../src/render.js';
-import {
   br,
   div,
   flexRow,
-} from '../src/render-helpers.js';
+} from '../src/rojs.js';
 
 async function main() {
   render(

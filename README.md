@@ -19,7 +19,7 @@ See [reference](#render) for template formats.
 [Live example](https://rojs.dev/examples/colours.html)
 
 ```js
-import {render} from './src/render.js';
+import {render} from './src/rojs.js';
 
 const colours = [
   'red',
@@ -74,8 +74,7 @@ See [reference](#observablejsonproxy) for all capabilities of the proxy object.
 [Live example](https://rojs.dev/examples/hello-world-observable-json.html)
 
 ```js
-import {render} from './src/render.js';
-import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from './src/observable-json.js';
+import {createObservableJsonProxy, isObservableJsonProxy, mutate, read, readWrite, watch, write} from './src/rojs.js';
 
 function main() {
   const textProxy = createObservableJsonProxy('Hello');
