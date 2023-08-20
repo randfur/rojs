@@ -96,7 +96,7 @@ export function htmlMapRead(listProxy, itemTemplateFunction) {
 }
 
 export class Component {
-  constructor({model}) {
+  constructor({model}={model: null}) {
     this.model = createObservableJsonProxy(model);
     this.view = null;
   }
