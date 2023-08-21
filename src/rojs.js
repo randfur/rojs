@@ -15,12 +15,12 @@
  */
 
 import {
-  render,
   Component,
   htmlIf,
   htmlMapRead,
   htmlRead,
   htmlSwitch,
+  render,
 } from './render.js';
 
 import {
@@ -36,41 +36,43 @@ import {
 } from './observable-json.js';
 
 import {
-  flexColumn,
-  tag,
-  button,
-  flexRow,
-  div,
   br,
-  style,
-  joinSpace,
+  button,
+  div,
+  flexColumn,
+  flexRow,
   joinBr,
+  joinSpace,
   ol,
+  style,
+  tag,
   ul,
 } from './render-helpers.js';
 
 import {
   array,
-  join,
-  enumerate,
-  sleep,
-  random,
-  pickRandom,
   coinFlip,
-  popKeys,
-  sum,
-  range,
+  enumerate,
+  join,
   lastItem,
+  pickRandom,
+  popKeys,
+  random,
+  range,
+  sleep,
+  sum,
 } from './utils.js';
 
 export {
-  render,
+  // render.js
   Component,
   htmlIf,
   htmlMapRead,
   htmlRead,
   htmlSwitch,
+  render,
 
+  // observable-json.js
   createObservableJsonProxy,
   isObservableJsonProxy,
   mutate,
@@ -81,27 +83,29 @@ export {
   watch,
   write,
 
-  flexColumn,
-  tag,
-  button,
-  flexRow,
-  div,
+  // render-helpers.js
   br,
-  style,
-  joinSpace,
+  button,
+  div,
+  flexColumn,
+  flexRow,
   joinBr,
+  joinSpace,
   ol,
+  style,
+  tag,
   ul,
 
+  // utils.js
   array,
-  join,
-  enumerate,
-  sleep,
-  random,
-  pickRandom,
   coinFlip,
-  popKeys,
-  sum,
-  range,
+  enumerate,
+  join,
   lastItem,
+  pickRandom,
+  popKeys,
+  random,
+  range,
+  sleep,
+  sum,
 };
