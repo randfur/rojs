@@ -43,6 +43,7 @@ export type Template =
 
 export interface ElementTemplate {
   tag?: string;
+  namespaceURI?: string;
   class?: ReadingValue<string>;
   style?: ReadingValue<{
     [cssProperty: string]: ReadingValue<string>;
@@ -221,8 +222,10 @@ function renderComponent(container, component, flatTreeRoot, flatTreeParent, fla
 function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent, flatTreePath, insertBeforeNode) {
   let {
     tag='div',
+    namespaceURI=null,
     class:classValue=null,
     style=null,
+    attributes=null,
     events=null,
     shadow=null,
     children=null,
@@ -230,7 +233,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
   } = elementTemplate;
 
   console.assert(typeof tag === 'string');
-  const element = document.createElement(tag);
+  const element = namespaceURI ? document.createElementNS(namespaceURI, tag) : document.createElement(tag);
 
   if (classValue !== null) {
     watch(classValue, classValue => {
@@ -253,17 +256,28 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
     });
   }
 
+  if (attributes !== null) {
+    console.assert(typeof attributes === 'object');
+    for (const [attribute, readingValue] of Object.entries(attributes)) {
+      watch(readingValue, value => {
+        element.setAttribute(attribute, value);
+      });
+    }
+  }
+
   if (events !== null) {
     for (const [eventName, eventHandler] of Object.entries(events)) {
       element.addEventListener(eventName, eventHandler);
     }
   }
 
-  for (const [attribute, readingValue] of Object.entries(elementTemplate)) {
-    switch (attribute) {
+  for (const [property, readingValue] of Object.entries(elementTemplate)) {
+    switch (property) {
     case 'tag':
+    case 'namespaceURI':
     case 'class':
     case 'style':
+    case 'attributes':
     case 'events':
     case 'shadow':
     case 'children':
@@ -271,7 +285,7 @@ function renderElement(container, elementTemplate, flatTreeRoot, flatTreeParent,
       break;
     default:
       watch(readingValue, value => {
-        element[attribute] = value;
+        element[property] = value;
       });
       break;
     }
